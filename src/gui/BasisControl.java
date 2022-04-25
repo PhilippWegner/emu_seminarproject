@@ -1,13 +1,19 @@
 package gui;
 
 import business.*;
+import business.emu.EmuCheckConnection;
+import business.emu.MESSWERT;
+
 import java.sql.SQLException;
 import javafx.stage.Stage;
+import net.sf.yad2xx.FTDIException;
 
 public class BasisControl {
 
 	private BasisModel basisModel;
 	private BasisView basisView;
+	private boolean istMessungGestart =	false;
+	private static int counter = 0;
 	  
 	public BasisControl(Stage primaryStage){
 		this.basisModel = BasisModel.getInstance();
@@ -47,7 +53,27 @@ public class BasisControl {
 		int lfdNr = Integer.parseInt(laufendeNummer);
 
 		// Dummy-Messung-Objekt, muss ersetzt werden !!!
- 		ergebnis = new Messung(lfdNr, 0.345);
+ 		// ergebnis = new Messung(lfdNr, 0.345);
+		
+		try {
+            EmuCheckConnection ecc = new EmuCheckConnection();
+            ecc.connect();
+            Thread.sleep(1000);
+            ecc.sendProgrammingMode();
+            Thread.sleep(1000);
+            ecc.sendRequest(MESSWERT.Leistung);
+            Thread.sleep(1000);
+            ecc.disconnect();
+
+            ergebnis = new Messung(lfdNr, ecc.gibErgebnisAus());
+
+        } catch (FTDIException ftdiExc) {
+            System.out.println("FTDIException");
+            ftdiExc.printStackTrace();
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
  		
  		this.speichereMessungInDb(messId, ergebnis);
  		return ergebnis;
@@ -65,6 +91,29 @@ public class BasisControl {
  			basisView.zeigeFehlermeldungAn( 
  				"Fehler beim Zugriff auf die Datenbank.");
  		}
-	} 
+	}
+  	
+  	public void starteMessreiheAufnehmen(String messreihenId, String laufendeNummer) {
+  		this.istMessungGestart = true;
+  		this.counter = Integer.parseInt(laufendeNummer);
+  		while(this.istMessungGestart) {
+  			System.out.print("Messreihe gestartet!");
+  			Messung ergebnis = holeMessungVonEMU(messreihenId, this.counter + "");
+  			
+  			System.out.println("Counter: " + counter);
+			try {
+				Thread.sleep(10000);
+			} catch (InterruptedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			this.counter++;
+  		}
+  	}
+  	
+  	public void stopMessreiheAufnehmen() {
+  		this.istMessungGestart = false;
+  		System.out.print("Messreihe gestoppt!");
+  	}
 
 }

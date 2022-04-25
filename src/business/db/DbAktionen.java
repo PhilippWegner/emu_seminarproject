@@ -3,7 +3,8 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.Vector;
 
-import business.*;
+import business.Messreihe;
+import business.Messung;
 
 public class DbAktionen{
  

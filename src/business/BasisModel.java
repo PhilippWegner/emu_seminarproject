@@ -1,10 +1,12 @@
 package business;
 
 import javafx.collections.*;
-import business.db.DbAktionen;
+
 import java.io.*;
 import java.sql.*;
 import java.util.concurrent.TimeUnit;
+
+import business.db.DbAktionen;
 
 public final class BasisModel {
 	

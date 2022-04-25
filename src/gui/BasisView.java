@@ -23,6 +23,7 @@ public class BasisView {
 	private Button btnHoleMessungVonEMU = new Button("Messung aus EMU aufnehmen");
 	private Button btnStarteMessreihe = new Button("Start: Messreihe aufnehmen");
 	private Button btnStoppeMessreihe = new Button("Stopp: Messreihe aufnehmen");
+	
 	 
 	public BasisView(BasisControl basisControl, Stage stage, BasisModel basisModel){
 	    Scene scene = new Scene(this.pane, 510, 240);
@@ -69,7 +70,7 @@ public class BasisView {
 	} 
 	 
 	private void initListener(){
-		btnLeseMessungenAusDB.setOnAction(new EventHandler<ActionEvent>(){
+		this.btnLeseMessungenAusDB.setOnAction(new EventHandler<ActionEvent>(){
 			@Override
 		    public void handle(ActionEvent e) {
 				Messung[] ergMessungen 
@@ -81,10 +82,17 @@ public class BasisView {
 				txtAnzeige.setText(erg);
 			}
 		});
-		btnHoleMessungVonEMU.setOnAction(aEvent -> {
-			txtAnzeige.setText(basisControl
-				.holeMessungVonEMU(txtMessreihenId.getText(),
-				txtLaufendeNummer.getText()).gibAttributeAus());
+		this.btnHoleMessungVonEMU.setOnAction(aEvent -> {
+			Messung messung = this.basisControl.holeMessungVonEMU(txtMessreihenId.getText(), txtLaufendeNummer.getText());
+			txtAnzeige.setText(messung.gibAttributeAus());
+		});
+		
+		this.btnStarteMessreihe.setOnAction(aEvent -> {
+			this.basisControl.starteMessreiheAufnehmen(txtMessreihenId.getText(), txtLaufendeNummer.getText());
+		});
+		
+		this.btnStoppeMessreihe.setOnAction(aEvent -> {
+			this.basisControl.stopMessreiheAufnehmen();
 		});
 	}
 	 

@@ -99,8 +99,7 @@ public class EmuCheckConnection extends Thread {
 		// Laenge 1, welcher als Parameter mitgegeben wird.
 		// Dieser wird in in die Konsole geschrieben.
 		// Dazu konvertieren Sie ihn vorher in ein char-Wert.
-		
-		super.run();
+
 		int intZahl;
 		byte[] byteArray = new byte[1];
 

@@ -94,26 +94,14 @@ public class BasisControl {
 	}
   	
   	public void starteMessreiheAufnehmen(String messreihenId, String laufendeNummer) {
-  		this.istMessungGestart = true;
-  		this.counter = Integer.parseInt(laufendeNummer);
-  		while(this.istMessungGestart) {
-  			System.out.print("Messreihe gestartet!");
-  			Messung ergebnis = holeMessungVonEMU(messreihenId, this.counter + "");
-  			
-  			System.out.println("Counter: " + counter);
-			try {
-				Thread.sleep(10000);
-			} catch (InterruptedException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			this.counter++;
-  		}
+  		System.out.print("Messreihe gestartet!");
+  		this.basisModel.starteMessreihe(Integer.parseInt(messreihenId), Integer.parseInt(messreihenId));
   	}
   	
   	public void stopMessreiheAufnehmen() {
-  		this.istMessungGestart = false;
   		System.out.print("Messreihe gestoppt!");
+  		this.basisModel.stoppeMessreihe();
+  		
   	}
 
 }

@@ -7,10 +7,12 @@ import java.sql.*;
 import java.util.concurrent.TimeUnit;
 
 import business.db.DbAktionen;
+import business.emu.ThreadTimer;
 
 public final class BasisModel {
 	
 	private static BasisModel basisModel;
+	private ThreadTimer threadTimer = null;
 	
 	public static BasisModel getInstance(){
 		if (basisModel == null){
@@ -68,5 +70,14 @@ public final class BasisModel {
 	
   	public String getDaten(){
     	return "in getDaten";
-	} 
+	}
+  	
+  	public void starteMessreihe(int messreihenId, int laufendeNummer) {
+  		this.threadTimer = new ThreadTimer(messreihenId, laufendeNummer);
+  		this.threadTimer.starteMessreihe();
+  	}
+  	
+  	public void stoppeMessreihe() {
+  		this.threadTimer.stoppeMessreihe();
+  	}
  }

@@ -1,22 +1,22 @@
 package business.emu;
 
 import java.sql.SQLException;
-
 import business.Messung;
 import business.db.DbAktionen;
 import net.sf.yad2xx.FTDIException;
 
 public class ThreadTimer extends Thread {
 	private EmuCheckConnection ecc;
-	private int zeitIntervall = 5000;
+	private int zeitIntervall;
 	private int messreihenId;
-	private int laufendeNummer;
+	private static int laufendeNummer; // static nur, falls laufendenNummer instanzübergreifend verwendet werden soll (laufendenNummer + Messgroesse sind Primaerschluessel!
 	private boolean istAufnahmeGestart = false;
 	private DbAktionen dbAktionen = new DbAktionen();
 
-	public ThreadTimer(int messreihenId, int laufendeNummer) {
+	public ThreadTimer(int messreihenId, int zeitIntervall) {
 		this.messreihenId = messreihenId;
-		this.laufendeNummer = laufendeNummer;
+		this.zeitIntervall = zeitIntervall;
+		laufendeNummer = 1;
 	}
 
 	public void starteMessreihe() {
@@ -47,11 +47,11 @@ public class ThreadTimer extends Thread {
 		        Thread.sleep(1000);
 		        ecc.disconnect();
 
-		        messung = new Messung(this.laufendeNummer, ecc.gibErgebnisAus());
-		        this.laufendeNummer++;
+		        messung = new Messung(laufendeNummer, ecc.gibErgebnisAus());
+		        laufendeNummer++;
 		        
 		        this.speichereMessungInDb(this.messreihenId, messung);
-		        sleep(zeitIntervall);
+		        sleep(this.zeitIntervall * 1000); // Mal 1000 wegen ms
 		        
 		    } catch (FTDIException ftdiExc) {
 		        System.out.println("FTDIException");

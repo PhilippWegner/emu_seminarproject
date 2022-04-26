@@ -1,10 +1,7 @@
 package business;
 
 import javafx.collections.*;
-
-import java.io.*;
 import java.sql.*;
-import java.util.concurrent.TimeUnit;
 
 import business.db.DbAktionen;
 import business.emu.ThreadTimer;
@@ -27,17 +24,13 @@ public final class BasisModel {
 	private DbAktionen dbAktionen = new DbAktionen();
 	
 	// wird zukuenftig noch instanziiert
-	private ObservableList<Messreihe> messreihen = null; 
+	private ObservableList<Messreihe> messreihen = FXCollections.observableArrayList();
 	
-	public Messung[] leseMessungenAusDb(int messreihenId)
-		throws ClassNotFoundException, SQLException{
-		Messung[] ergebnis = null;
-		this.dbAktionen.connectDb();
-		ergebnis = this.dbAktionen.leseMessungen(messreihenId);
-		this.dbAktionen.closeDb();
-		return ergebnis;
-	} 
 	
+	public ObservableList<Messreihe> getMessreihen() {
+		return messreihen;
+	}
+
 	public void speichereMessungInDb(int messreihenId, Messung messung)
 		throws ClassNotFoundException, SQLException{
 		this.dbAktionen.connectDb();
@@ -57,7 +50,7 @@ public final class BasisModel {
 		}
 		for(int i = 0; i < messreihenAusDb.length; i++){
 			this.messreihen.add(messreihenAusDb[i]);
-		} 
+		}
 	}
 		  
 	public void speichereMessreiheInDb(Messreihe messreihe)
@@ -72,9 +65,26 @@ public final class BasisModel {
     	return "in getDaten";
 	}
   	
-  	public void starteMessreihe(int messreihenId, int laufendeNummer) {
-  		this.threadTimer = new ThreadTimer(messreihenId, laufendeNummer);
-  		this.threadTimer.starteMessreihe();
+  	public int anzahlMessungenZuMessreihe(int messreihenId) {
+  		int anzahlMessungen = 0; 
+		try {
+			this.dbAktionen.connectDb();		
+			Messung[] messungen = this.dbAktionen.leseMessungen(messreihenId);
+			this.dbAktionen.closeDb();
+			anzahlMessungen = messungen.length;
+			
+		} catch (ClassNotFoundException | SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return anzahlMessungen;
+
+  	}
+  	
+  	public void starteMessreihe(int messreihenId, int zeitIntervall) {
+  		this.threadTimer = new ThreadTimer(messreihenId, zeitIntervall); // Damit der erste Eintrag nie 0 wird!
+		this.threadTimer.starteMessreihe();
+  		
   	}
   	
   	public void stoppeMessreihe() {

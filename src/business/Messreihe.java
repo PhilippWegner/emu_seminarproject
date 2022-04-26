@@ -7,7 +7,8 @@ public class Messreihe {
 	private int zeitintervall;
 	private String verbraucher;
 	private String messgroesse;
-	private Messung[] messungen; 
+	private Messung[] messungen;
+	private String messungenString;
 	
 	public Messreihe(int messreihenId, int zeitintervall,
 		String verbraucher, String messgroesse) {
@@ -16,6 +17,16 @@ public class Messreihe {
 		this.zeitintervall = zeitintervall;
 		this.verbraucher = verbraucher;
 		this.messgroesse = messgroesse;
+		this.messungenString = "";
+	}
+
+	public String getMessungenString() {
+		String[] stringArray = new String[this.messungen.length];
+		for(int i = 0; i < this.messungen.length; i++) {
+			stringArray[i] = this.messungen[i].gibAttributeAus();
+		}
+		String stringTemp = String.join(" / ", stringArray);
+		return stringTemp;
 	}
 
 	public int getMessreihenId() {

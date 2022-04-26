@@ -1,107 +1,187 @@
 package gui;
 
-import business.*;
-import business.emu.EmuCheckConnection;
-import business.emu.MESSWERT;
-
 import java.sql.SQLException;
-import javafx.stage.Stage;
-import net.sf.yad2xx.FTDIException;
+import business.BasisModel;
+import business.Messreihe;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
+import javafx.scene.control.Button;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
 
-public class BasisControl {
+public class BasisControl{
+	@FXML
+	private TextField txtMessreihenId;
+	@FXML
+	private TextField txtZeitintervall;
+	@FXML
+	private TextField txtVerbraucher;
+	@FXML
+	private TextField txtMessgroesse;
+	@FXML
+	private Button btnMessreiheStoppen;
+	@FXML
+	private Button btnMessreiheStarten;
+	@FXML
+	private TableView<Messreihe> tableView;
+	@FXML
+	private TableColumn<Messreihe, Integer> clmIdentnummer;
+	@FXML
+	private TableColumn<Messreihe, Integer> clmZeitIntervall;
+	@FXML
+	private TableColumn<Messreihe, String> clmVerbraucher;
+	@FXML
+	private TableColumn<Messreihe, String> clmMessgroesse;
+	@FXML
+	private TableColumn<Messreihe, String> clmMessungen;
 
 	private BasisModel basisModel;
-	private BasisView basisView;
-	private boolean istMessungGestart =	false;
-	private static int counter = 0;
-	  
-	public BasisControl(Stage primaryStage){
+	private ObservableList<Messreihe> messreihen;
+
+	public BasisControl() {
 		this.basisModel = BasisModel.getInstance();
-		this.basisView = new BasisView(this, primaryStage, this.basisModel);
-		primaryStage.show();
 	}
+	
+	@FXML
+	public void initialize() {
+		// TODO Auto-generated method stub
+		this.leseMessreihenInklusiveMessungenAusDb();
 		
-	public Messung[] leseMessungenAusDb(String messreihenId){
-		Messung[] ergebnis = null;
-		int idMessreihe = -1;
-		try{
- 			idMessreihe = Integer.parseInt(messreihenId);
- 		}
- 		catch(NumberFormatException nfExc){
- 			basisView.zeigeFehlermeldungAn( 
- 				"Das Format der eingegebenen MessreihenId ist nicht korrekt.");
- 		}
- 		try{
- 			ergebnis = this.basisModel.leseMessungenAusDb(idMessreihe);
- 		}
- 		catch(ClassNotFoundException cnfExc){
- 			basisView.zeigeFehlermeldungAn( 
- 				"Fehler bei der Verbindungerstellung zur Datenbank.");
- 		}
- 		catch(SQLException sqlExc){
- 			basisView.zeigeFehlermeldungAn( 
- 				"Fehler beim Zugriff auf die Datenbank.");
- 			sqlExc.printStackTrace();
- 		}
- 		return ergebnis;
-	} 
- 	  
-	public Messung holeMessungVonEMU(String messreihenId, String laufendeNummer){
- 		Messung ergebnis = null;
- 		int messId = -1;
+		this.clmIdentnummer.setCellValueFactory(new PropertyValueFactory<Messreihe,Integer>("messreihenId"));
+		this.clmZeitIntervall.setCellValueFactory(new PropertyValueFactory<Messreihe,Integer>("zeitintervall"));
+		this.clmVerbraucher.setCellValueFactory(new PropertyValueFactory<Messreihe,String>("verbraucher"));
+		this.clmMessgroesse.setCellValueFactory(new PropertyValueFactory<Messreihe,String>("messgroesse"));
+		this.clmMessungen.setCellValueFactory(new PropertyValueFactory<Messreihe,String>("messungenString"));
+		
+		
+		this.tableView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Object>() {
+		    @Override
+		    public void changed(ObservableValue observableValue, Object oldValue, Object newValue) {
+		    	if(tableView.getSelectionModel().getSelectedItem() != null) {
+		    		btnMessreiheStarten.setDisable(false);
+		    		
+		    		Messreihe selectedRow = tableView.getSelectionModel().getSelectedItem();
+		    		int messreihenId = selectedRow.getMessreihenId();
+		    		
+		    		int anzahlMessungenZuMessreihe = basisModel.anzahlMessungenZuMessreihe(messreihenId);
+		    		if(anzahlMessungenZuMessreihe == 0) {
+		    			btnMessreiheStarten.setDisable(false);
+		    		} else {
+		    			btnMessreiheStarten.setDisable(true);
+		    		}
+		    	}
+		    }
+		});
+	}
+	
+/*
+	public Messung holeMessungVonEMU(String messreihenId, String laufendeNummer) {
+		Messung ergebnis = null;
+		int messId = -1;
 		messId = Integer.parseInt(messreihenId);
 		int lfdNr = Integer.parseInt(laufendeNummer);
 
 		// Dummy-Messung-Objekt, muss ersetzt werden !!!
- 		// ergebnis = new Messung(lfdNr, 0.345);
-		
+		// ergebnis = new Messung(lfdNr, 0.345);
+
 		try {
-            EmuCheckConnection ecc = new EmuCheckConnection();
-            ecc.connect();
-            Thread.sleep(1000);
-            ecc.sendProgrammingMode();
-            Thread.sleep(1000);
-            ecc.sendRequest(MESSWERT.Leistung);
-            Thread.sleep(1000);
-            ecc.disconnect();
+			EmuCheckConnection ecc = new EmuCheckConnection();
+			ecc.connect();
+			Thread.sleep(1000);
+			ecc.sendProgrammingMode();
+			Thread.sleep(1000);
+			ecc.sendRequest(MESSWERT.Leistung);
+			Thread.sleep(1000);
+			ecc.disconnect();
 
-            ergebnis = new Messung(lfdNr, ecc.gibErgebnisAus());
+			ergebnis = new Messung(lfdNr, ecc.gibErgebnisAus());
 
-        } catch (FTDIException ftdiExc) {
-            System.out.println("FTDIException");
-            ftdiExc.printStackTrace();
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
- 		
- 		this.speichereMessungInDb(messId, ergebnis);
- 		return ergebnis;
- 	}
-	
-  	private void speichereMessungInDb(int messreihenId, Messung messung){
- 		try{
- 			this.basisModel.speichereMessungInDb(messreihenId, messung);
- 		}
- 		catch(ClassNotFoundException cnfExc){
- 			basisView.zeigeFehlermeldungAn( 
- 				"Fehler bei der Verbindungerstellung zur Datenbank.");
- 		}
- 		catch(SQLException sqlExc){
- 			basisView.zeigeFehlermeldungAn( 
- 				"Fehler beim Zugriff auf die Datenbank.");
- 		}
+		} catch (FTDIException ftdiExc) {
+			System.out.println("FTDIException");
+			ftdiExc.printStackTrace();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		this.speichereMessungInDb(messId, ergebnis);
+		return ergebnis;
 	}
-  	
-  	public void starteMessreiheAufnehmen(String messreihenId, String laufendeNummer) {
-  		System.out.print("Messreihe gestartet!");
-  		this.basisModel.starteMessreihe(Integer.parseInt(messreihenId), Integer.parseInt(messreihenId));
-  	}
-  	
-  	public void stopMessreiheAufnehmen() {
-  		System.out.print("Messreihe gestoppt!");
-  		this.basisModel.stoppeMessreihe();
-  		
-  	}
+
+	private void speichereMessungInDb(int messreihenId, Messung messung) {
+		try {
+			this.basisModel.speichereMessungInDb(messreihenId, messung);
+		} catch (ClassNotFoundException cnfExc) {
+			System.err.println("Fehler bei der Verbindungerstellung zur Datenbank.");
+		} catch (SQLException sqlExc) {
+			System.err.println("Fehler beim Zugriff auf die Datenbank.");
+		}
+	}
+*/
+	
+	@FXML
+	public void speichereMessreiheInDB() {
+		int identNummerMessreihe = Integer.parseInt(this.txtMessreihenId.getText());
+		int zeitIntervallSekunden = Integer.parseInt(this.txtZeitintervall.getText());
+		String verbraucher = this.txtVerbraucher.getText();
+		String messgroesse = this.txtMessgroesse.getText();
+		Messreihe messreihe = new Messreihe(identNummerMessreihe, zeitIntervallSekunden, verbraucher, messgroesse);
+		try {
+			this.basisModel.speichereMessreiheInDb(messreihe);
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		this.leseMessreihenInklusiveMessungenAusDb();
+		
+		// Zurücksetzen der Textfelder
+		this.txtMessreihenId.setText("");
+		this.txtZeitintervall.setText("");
+		this.txtVerbraucher.setText("");
+		this.txtMessgroesse.setText("");
+
+	}
+
+	@FXML
+	public void stoppeMessreihe() {
+		this.btnMessreiheStarten.setDisable(false);
+		this.btnMessreiheStoppen.setDisable(true);
+		System.out.println("stoppeMessreihe");
+		this.basisModel.stoppeMessreihe();
+	}
+
+	@FXML
+	public void starteMessreihe() {
+		Messreihe selectedRow = this.tableView.getSelectionModel().getSelectedItem();
+		int messreihenId = selectedRow.getMessreihenId();
+		int zeitIntervall = selectedRow.getZeitintervall();
+		String messgroesse = selectedRow.getMessgroesse() + "";
+		
+		this.btnMessreiheStoppen.setDisable(false);
+		this.btnMessreiheStarten.setDisable(true);
+		System.out.println("starteMessreihe");
+		System.out.println(messreihenId + " - " + zeitIntervall + " - " + messgroesse);
+		this.basisModel.starteMessreihe(messreihenId, zeitIntervall);
+	}
+
+	@FXML
+	public void leseMessreihenInklusiveMessungenAusDb() {
+		System.out.println("leseMessreihenInklusiveMessungenAusDb");
+		try {
+			this.basisModel.leseMessreihenInklusiveMessungenAusDb();
+			this.messreihen = this.basisModel.getMessreihen();
+			this.tableView.getItems().setAll(this.messreihen);
+		} catch (ClassNotFoundException | SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
 }

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.control.cell.PropertyValueFactory?>
+
+<BorderPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.BasisControl">
+   <center>
+      <Pane prefHeight="490.0" prefWidth="750.0" BorderPane.alignment="CENTER">
+         <children>
+            <Label layoutX="20.0" layoutY="20.0" text="Eingabe einer Messreihe">
+               <font>
+                  <Font name="System Bold" size="24.0" />
+               </font>
+            </Label>
+            <Label layoutX="20.0" layoutY="70.0" text="Identnummer der Messreihe" />
+            <Label layoutX="20.0" layoutY="100.0" text="Zeitintervall in Sekunden" />
+            <Label layoutX="324.0" layoutY="70.0" text="Verbraucher" />
+            <Label layoutX="327.0" layoutY="109.0" text="Messgröße" />
+            <TextField fx:id="txtMessreihenId" layoutX="182.0" layoutY="70.0" prefHeight="25.0" prefWidth="100.0" />
+            <TextField fx:id="txtZeitintervall" layoutX="182.0" layoutY="105.0" prefHeight="25.0" prefWidth="100.0" />
+            <TextField fx:id="txtVerbraucher" layoutX="421.0" layoutY="70.0" prefHeight="25.0" prefWidth="100.0" />
+            <TextField fx:id="txtMessgroesse" layoutX="421.0" layoutY="105.0" prefHeight="25.0" prefWidth="100.0" />
+            <Button layoutX="570.0" layoutY="96.0" mnemonicParsing="false" onAction="#speichereMessreiheInDB" 
+               prefHeight="25.0" prefWidth="150.0" text="Messreihe speichern" />
+            <Label layoutX="20" layoutY="150" text="Anzeige der Messreihen">
+               <font>
+                  <Font name="System Bold" size="24.0" />
+               </font>
+            </Label>
+            
+            <TableView layoutX="20" layoutY="200" prefHeight="210" prefWidth="700" editable="true" fx:id="tableView">
+            	<columns>
+            		
+            		<TableColumn fx:id="clmIdentnummer" text="Identnummer" prefWidth="100">
+            			<cellValueFactory>
+                    		<PropertyValueFactory property="messreihenId" />
+                		</cellValueFactory>
+            		</TableColumn>
+            		
+            		<TableColumn fx:id="clmZeitIntervall" text="Zeitintervall" prefWidth="100">
+            			<cellValueFactory>
+                    		<PropertyValueFactory property="zeitintervall" />
+                		</cellValueFactory>
+            		</TableColumn>
+            		
+            		<TableColumn fx:id="clmVerbraucher" text="Verbraucher" prefWidth="130">
+            			<cellValueFactory>
+                    		<PropertyValueFactory property="verbraucher" />
+                		</cellValueFactory>
+            		</TableColumn>
+            		
+            		<TableColumn fx:id="clmMessgroesse" text="Messgröße" prefWidth="100">
+            			<cellValueFactory>
+                    		<PropertyValueFactory property="messgroesse" />
+                		</cellValueFactory>
+            		</TableColumn>
+            		
+            		<TableColumn fx:id="clmMessungen" text="Messungen" prefWidth="270">
+            			<cellValueFactory>
+                    		<PropertyValueFactory property="messungen" />
+                		</cellValueFactory>
+            		</TableColumn>
+            		
+            	</columns>
+            </TableView>
+            
+            <Button fx:id="btnMessreiheStoppen" disable="true" layoutX="385.0" layoutY="440" mnemonicParsing="false" onAction="#stoppeMessreihe" prefHeight="25.0" prefWidth="150" text="Messreihe stoppen" />
+            <Button fx:id="btnMessreiheStarten" disable = "true" layoutX="210.0" layoutY="440" mnemonicParsing="false" onAction="#starteMessreihe" prefHeight="25.0" prefWidth="150" text="Messreihe starten" />
+            <Button layoutX="570.0" layoutY="440" mnemonicParsing="false" onAction="#leseMessreihenInklusiveMessungenAusDb" prefHeight="25.0" prefWidth="150" text="Messreihen lesen" />
+         </children>
+      </Pane>
+   </center>
+</BorderPane>

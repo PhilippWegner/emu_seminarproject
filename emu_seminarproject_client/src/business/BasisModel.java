@@ -1,93 +1,147 @@
 package business;
 
 import javafx.collections.*;
+
+import java.io.IOException;
 import java.sql.*;
 
-import business.db.DbAktionen;
+import javax.ws.rs.core.MediaType;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.client.WebResource.Builder;
+
 import business.emu.ThreadTimer;
 
 public final class BasisModel {
-	
+
 	private static BasisModel basisModel;
 	private ThreadTimer threadTimer = null;
-	
-	public static BasisModel getInstance(){
-		if (basisModel == null){
+	private static final String REST_URI = "http://localhost:8080/emu_seminarproject_server/webapi/serviceEmu";
+	private Client client = Client.create();
+
+	public static BasisModel getInstance() {
+		if (basisModel == null) {
 			basisModel = new BasisModel();
 		}
 		return basisModel;
 	}
-	
-	private BasisModel(){		
+
+	private BasisModel() {
 	}
-	
-	private DbAktionen dbAktionen = new DbAktionen();
-	
+
+
 	// wird zukuenftig noch instanziiert
 	private ObservableList<Messreihe> messreihen = FXCollections.observableArrayList();
-	
-	
+
 	public ObservableList<Messreihe> getMessreihen() {
 		return messreihen;
 	}
 
-	public void speichereMessungInDb(int messreihenId, Messung messung)
-		throws ClassNotFoundException, SQLException{
-		this.dbAktionen.connectDb();
-		this.dbAktionen.fuegeMessungEin(messreihenId, messung);
-		this.dbAktionen.closeDb();
-	} 
-	
-	public void leseMessreihenInklusiveMessungenAusDb()
-		throws ClassNotFoundException, SQLException{
-		this.dbAktionen.connectDb();
-		Messreihe[] messreihenAusDb 
-		    = this.dbAktionen.leseMessreihenInklusiveMessungen(); 
-		this.dbAktionen.closeDb();
-		int anzahl = this.messreihen.size();
-		for(int i = 0; i < anzahl; i++){
-		    this.messreihen.remove(0);
-		}
-		for(int i = 0; i < messreihenAusDb.length; i++){
-			this.messreihen.add(messreihenAusDb[i]);
-		}
-	}
-		  
-	public void speichereMessreiheInDb(Messreihe messreihe)
-	  	throws ClassNotFoundException, SQLException{
-	  	this.dbAktionen.connectDb();
-	  	this.dbAktionen.fuegeMessreiheEin(messreihe);
-	  	this.dbAktionen.closeDb();
-	  	this.messreihen.add(messreihe);
-	} 
-	
-  	public String getDaten(){
-    	return "in getDaten";
-	}
-  	
-  	public int anzahlMessungenZuMessreihe(int messreihenId) {
-  		int anzahlMessungen = 0; 
+	public void speichereMessungInDb(int messreihenId, Messung messung) throws ClassNotFoundException, SQLException {
+		System.out.println("Posting Messung");
 		try {
-			this.dbAktionen.connectDb();		
-			Messung[] messungen = this.dbAktionen.leseMessungen(messreihenId);
-			this.dbAktionen.closeDb();
-			anzahlMessungen = messungen.length;
-			
-		} catch (ClassNotFoundException | SQLException e) {
+			ObjectMapper objectMapper = new ObjectMapper();
+			String output;
+			output = objectMapper.writeValueAsString(messung);
+
+			WebResource webResource = client.resource(REST_URI + "/messung/" + messreihenId);
+			ClientResponse clientResponse = webResource.type("application/json").post(ClientResponse.class, output);
+			if (clientResponse.getStatus() != 200) {
+				System.err.println("Fehler: clientResponse.STATUS " + clientResponse.getStatus());
+				System.err.println("Fehler: Entity " + clientResponse.getEntity(String.class));
+				return; // Ausstieg bei Fehler!
+			}
+
+			System.out.println(clientResponse.getEntity(String.class));
+
+		} catch (JsonProcessingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return anzahlMessungen;
+	}
 
-  	}
-  	
-  	public void starteMessreihe(int messreihenId, int zeitIntervall) {
-  		this.threadTimer = new ThreadTimer(messreihenId, zeitIntervall); // Damit der erste Eintrag nie 0 wird!
+	public void leseMessreihenInklusiveMessungenAusDb() throws ClassNotFoundException, SQLException {
+		System.out.println("Get Messreihe");
+		this.messreihen.clear();
+		try {
+			WebResource webResource = client.resource(REST_URI + "/messreihen");
+			Builder builder = webResource.accept("application/json").header("content-type", MediaType.APPLICATION_JSON);
+			ClientResponse clientResponse = builder.get(ClientResponse.class);
+			if (clientResponse.getStatus() != 200) {
+				System.err.println("Fehler: clientResponse.STATUS " + clientResponse.getStatus());
+				System.err.println("Fehler: Entity " + clientResponse.getEntity(String.class));
+				return; // Ausstieg bei Fehler!
+			}
+//			Wenn es in die Console geschrieben wird, wird die Variable aufgelöst???
+//			System.out.println("clientResponse:" + clientResponse.getEntity(String.class)); 
+
+			ObjectMapper objectMapper = new ObjectMapper();
+			Messreihe[] messreihen;
+			messreihen = objectMapper.readValue(clientResponse.getEntity(String.class), Messreihe[].class);
+			System.out.println("messreihen");
+			System.out.println("MESSREIHE: " + messreihen.toString());
+
+			// Neue Messreihenliste aufbauen
+			for (Messreihe messreihe : messreihen) {
+				this.messreihen.add(messreihe);
+			}
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public void speichereMessreiheInDb(Messreihe messreihe) throws ClassNotFoundException, SQLException {
+		System.out.println("Posting Messreihe");
+		try {
+			ObjectMapper objectMapper = new ObjectMapper();
+			String output;
+			output = objectMapper.writeValueAsString(messreihe);
+
+			WebResource webResource = client.resource(REST_URI + "/messreihe/").path("" + messreihe.getMessreihenId());
+			System.out.println("output:" + output);
+			ClientResponse clientResponse = webResource.accept("application/json").type("application/json").post(ClientResponse.class, output);
+			if (clientResponse.getStatus() != 200) {
+				System.err.println("Fehler: clientResponse.STATUS " + clientResponse.getStatus());
+				System.err.println("Fehler: Entity " + clientResponse.getEntity(String.class));
+				return; // Ausstieg bei Fehler!
+			}
+
+			System.out.println(clientResponse.getEntity(String.class));
+
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public String getDaten() {
+		return "in getDaten";
+	}
+
+	/*
+	 * public int anzahlMessungenZuMessreihe(int messreihenId) { int anzahlMessungen
+	 * = 0; try { this.dbAktionen.connectDb(); Messung[] messungen =
+	 * this.dbAktionen.leseMessungen(messreihenId); this.dbAktionen.closeDb();
+	 * anzahlMessungen = messungen.length;
+	 * 
+	 * } catch (ClassNotFoundException | SQLException e) { // TODO Auto-generated
+	 * catch block e.printStackTrace(); } return anzahlMessungen; }
+	 */
+	public void starteMessreihe(int messreihenId, int zeitIntervall) {
+		this.threadTimer = new ThreadTimer(messreihenId, zeitIntervall); // Damit der erste Eintrag nie 0 wird!
 		this.threadTimer.starteMessreihe();
-  		
-  	}
-  	
-  	public void stoppeMessreihe() {
-  		this.threadTimer.stoppeMessreihe();
-  	}
- }
+
+	}
+
+	public void stoppeMessreihe() {
+		this.threadTimer.stoppeMessreihe();
+	}
+}

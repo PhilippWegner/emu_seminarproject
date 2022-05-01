@@ -3,6 +3,9 @@ package gui;
 import java.sql.SQLException;
 import business.BasisModel;
 import business.Messreihe;
+import business.Messung;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
@@ -41,21 +44,34 @@ public class BasisControl{
 
 	private BasisModel basisModel;
 	private ObservableList<Messreihe> messreihen;
+	
 
 	public BasisControl() {
 		this.basisModel = BasisModel.getInstance();
 	}
-	
+
+	@SuppressWarnings("unchecked") // prop
 	@FXML
 	public void initialize() {
 		// TODO Auto-generated method stub
-		this.leseMessreihenInklusiveMessungenAusDb();
+		try {
+			this.leseMessreihenInklusiveMessungenAusDb();			
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
 		
 		this.clmIdentnummer.setCellValueFactory(new PropertyValueFactory<Messreihe,Integer>("messreihenId"));
 		this.clmZeitIntervall.setCellValueFactory(new PropertyValueFactory<Messreihe,Integer>("zeitintervall"));
 		this.clmVerbraucher.setCellValueFactory(new PropertyValueFactory<Messreihe,String>("verbraucher"));
 		this.clmMessgroesse.setCellValueFactory(new PropertyValueFactory<Messreihe,String>("messgroesse"));
-		this.clmMessungen.setCellValueFactory(new PropertyValueFactory<Messreihe,String>("messungenString"));
+//		CREDITS: 
+//		https://stackoverflow.com/questions/43148635/how-to-show-objects-in-tablecolumn
+		this.clmMessungen.setCellValueFactory(Messreihe -> {
+			@SuppressWarnings("rawtypes") // prop
+			SimpleObjectProperty prop = new SimpleObjectProperty();
+			prop.setValue(Messreihe.getValue().gibMessungAus());
+			return prop;
+		});
 		
 		
 		this.tableView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Object>() {
@@ -66,8 +82,8 @@ public class BasisControl{
 		    		
 		    		Messreihe selectedRow = tableView.getSelectionModel().getSelectedItem();
 		    		int messreihenId = selectedRow.getMessreihenId();
+		    		int anzahlMessungenZuMessreihe = selectedRow.getMessungen().length;
 		    		
-		    		int anzahlMessungenZuMessreihe = basisModel.anzahlMessungenZuMessreihe(messreihenId);
 		    		if(anzahlMessungenZuMessreihe == 0) {
 		    			btnMessreiheStarten.setDisable(false);
 		    		} else {
@@ -78,50 +94,6 @@ public class BasisControl{
 		});
 	}
 	
-/*
-	public Messung holeMessungVonEMU(String messreihenId, String laufendeNummer) {
-		Messung ergebnis = null;
-		int messId = -1;
-		messId = Integer.parseInt(messreihenId);
-		int lfdNr = Integer.parseInt(laufendeNummer);
-
-		// Dummy-Messung-Objekt, muss ersetzt werden !!!
-		// ergebnis = new Messung(lfdNr, 0.345);
-
-		try {
-			EmuCheckConnection ecc = new EmuCheckConnection();
-			ecc.connect();
-			Thread.sleep(1000);
-			ecc.sendProgrammingMode();
-			Thread.sleep(1000);
-			ecc.sendRequest(MESSWERT.Leistung);
-			Thread.sleep(1000);
-			ecc.disconnect();
-
-			ergebnis = new Messung(lfdNr, ecc.gibErgebnisAus());
-
-		} catch (FTDIException ftdiExc) {
-			System.out.println("FTDIException");
-			ftdiExc.printStackTrace();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		this.speichereMessungInDb(messId, ergebnis);
-		return ergebnis;
-	}
-
-	private void speichereMessungInDb(int messreihenId, Messung messung) {
-		try {
-			this.basisModel.speichereMessungInDb(messreihenId, messung);
-		} catch (ClassNotFoundException cnfExc) {
-			System.err.println("Fehler bei der Verbindungerstellung zur Datenbank.");
-		} catch (SQLException sqlExc) {
-			System.err.println("Fehler beim Zugriff auf die Datenbank.");
-		}
-	}
-*/
 	
 	@FXML
 	public void speichereMessreiheInDB() {
@@ -151,7 +123,7 @@ public class BasisControl{
 
 	@FXML
 	public void stoppeMessreihe() {
-		this.btnMessreiheStarten.setDisable(false);
+		this.btnMessreiheStarten.setDisable(true);
 		this.btnMessreiheStoppen.setDisable(true);
 		System.out.println("stoppeMessreihe");
 		this.basisModel.stoppeMessreihe();

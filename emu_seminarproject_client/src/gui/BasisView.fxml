@@ -61,7 +61,7 @@
             		
             		<TableColumn fx:id="clmMessungen" text="Messungen" prefWidth="270">
             			<cellValueFactory>
-                    		<PropertyValueFactory property="messungenString" />
+                    		<PropertyValueFactory property="messungen" />
                 		</cellValueFactory>
             		</TableColumn>
             		

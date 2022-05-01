@@ -1,8 +1,9 @@
 package business.emu;
 
 import java.sql.SQLException;
+
+import business.BasisModel;
 import business.Messung;
-import business.db.DbAktionen;
 import net.sf.yad2xx.FTDIException;
 
 public class ThreadTimer extends Thread {
@@ -11,9 +12,10 @@ public class ThreadTimer extends Thread {
 	private int messreihenId;
 	private static int laufendeNummer; // static nur, falls laufendenNummer instanzübergreifend verwendet werden soll (laufendenNummer + Messgroesse sind Primaerschluessel!
 	private boolean istAufnahmeGestart = false;
-	private DbAktionen dbAktionen = new DbAktionen();
+	private BasisModel basisModel;
 
 	public ThreadTimer(int messreihenId, int zeitIntervall) {
+		this.basisModel = BasisModel.getInstance();
 		this.messreihenId = messreihenId;
 		this.zeitIntervall = zeitIntervall;
 		laufendeNummer = 1;
@@ -29,9 +31,7 @@ public class ThreadTimer extends Thread {
 	}
 
 	private void speichereMessungInDb(int messreihenId, Messung messung) throws ClassNotFoundException, SQLException {
-		this.dbAktionen.connectDb();
-		this.dbAktionen.fuegeMessungEin(messreihenId, messung);
-		this.dbAktionen.closeDb();
+		this.basisModel.speichereMessungInDb(messreihenId, messung);
 	}
 
 	public void run() {

@@ -19,7 +19,7 @@
             <Label layoutX="20.0" layoutY="70.0" text="Identnummer der Messreihe" />
             <Label layoutX="20.0" layoutY="100.0" text="Zeitintervall in Sekunden" />
             <Label layoutX="324.0" layoutY="70.0" text="Verbraucher" />
-            <Label layoutX="327.0" layoutY="109.0" text="MessgrÃ¶ÃŸe" />
+            <Label layoutX="327.0" layoutY="109.0" text="Messgr&#246;&#223;e" />
             <TextField fx:id="txtMessreihenId" layoutX="182.0" layoutY="70.0" prefHeight="25.0" prefWidth="100.0" />
             <TextField fx:id="txtZeitintervall" layoutX="182.0" layoutY="105.0" prefHeight="25.0" prefWidth="100.0" />
             <TextField fx:id="txtVerbraucher" layoutX="421.0" layoutY="70.0" prefHeight="25.0" prefWidth="100.0" />
@@ -62,7 +62,7 @@
                      </cellValueFactory>
                   </TableColumn>
 
-                  <TableColumn fx:id="clmMessgroesse" text="MessgrÃ¶ÃŸe" prefWidth="100">
+                  <TableColumn fx:id="clmMessgroesse" text="Messgr&#246;&#223;e" prefWidth="100">
                      <cellValueFactory>
                         <PropertyValueFactory property="messgroesse" />
                      </cellValueFactory>

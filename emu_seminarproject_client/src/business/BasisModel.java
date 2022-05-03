@@ -33,7 +33,6 @@ public final class BasisModel {
 	private BasisModel() {
 	}
 
-
 	// wird zukuenftig noch instanziiert
 	private ObservableList<Messreihe> messreihen = FXCollections.observableArrayList();
 
@@ -76,8 +75,9 @@ public final class BasisModel {
 				System.err.println("Fehler: Entity " + clientResponse.getEntity(String.class));
 				return; // Ausstieg bei Fehler!
 			}
-//			Wenn es in die Console geschrieben wird, wird die Variable aufgelöst???
-//			System.out.println("clientResponse:" + clientResponse.getEntity(String.class)); 
+			// Wenn es in die Console geschrieben wird, wird die Variable aufgelÃ¶st???
+			// System.out.println("clientResponse:" +
+			// clientResponse.getEntity(String.class));
 
 			ObjectMapper objectMapper = new ObjectMapper();
 			Messreihe[] messreihen;
@@ -107,7 +107,8 @@ public final class BasisModel {
 
 			WebResource webResource = client.resource(REST_URI + "/messreihe/").path("" + messreihe.getMessreihenId());
 			System.out.println("output:" + output);
-			ClientResponse clientResponse = webResource.accept("application/json").type("application/json").post(ClientResponse.class, output);
+			ClientResponse clientResponse = webResource.accept("application/json").type("application/json")
+					.post(ClientResponse.class, output);
 			if (clientResponse.getStatus() != 200) {
 				System.err.println("Fehler: clientResponse.STATUS " + clientResponse.getStatus());
 				System.err.println("Fehler: Entity " + clientResponse.getEntity(String.class));
@@ -126,17 +127,9 @@ public final class BasisModel {
 		return "in getDaten";
 	}
 
-	/*
-	 * public int anzahlMessungenZuMessreihe(int messreihenId) { int anzahlMessungen
-	 * = 0; try { this.dbAktionen.connectDb(); Messung[] messungen =
-	 * this.dbAktionen.leseMessungen(messreihenId); this.dbAktionen.closeDb();
-	 * anzahlMessungen = messungen.length;
-	 * 
-	 * } catch (ClassNotFoundException | SQLException e) { // TODO Auto-generated
-	 * catch block e.printStackTrace(); } return anzahlMessungen; }
-	 */
-	public void starteMessreihe(int messreihenId, int zeitIntervall) {
-		this.threadTimer = new ThreadTimer(messreihenId, zeitIntervall); // Damit der erste Eintrag nie 0 wird!
+	public void starteMessreihe(int messreihenId, int zeitIntervall, String messgroesse) {
+		this.threadTimer = new ThreadTimer(messreihenId, zeitIntervall, messgroesse); // Damit der erste Eintrag nie 0
+																						// wird!
 		this.threadTimer.starteMessreihe();
 
 	}

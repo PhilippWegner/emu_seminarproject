@@ -11,12 +11,13 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.MenuButton;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 
-public class BasisControl{
+public class BasisControl {
 	@FXML
 	private TextField txtMessreihenId;
 	@FXML
@@ -24,7 +25,7 @@ public class BasisControl{
 	@FXML
 	private TextField txtVerbraucher;
 	@FXML
-	private TextField txtMessgroesse;
+	private MenuButton cbMessgroesse;
 	@FXML
 	private Button btnMessreiheStoppen;
 	@FXML
@@ -44,7 +45,6 @@ public class BasisControl{
 
 	private BasisModel basisModel;
 	private ObservableList<Messreihe> messreihen;
-	
 
 	public BasisControl() {
 		this.basisModel = BasisModel.getInstance();
@@ -55,52 +55,50 @@ public class BasisControl{
 	public void initialize() {
 		// TODO Auto-generated method stub
 		try {
-			this.leseMessreihenInklusiveMessungenAusDb();			
-		} catch(Exception e) {
+			this.leseMessreihenInklusiveMessungenAusDb();
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
-		this.clmIdentnummer.setCellValueFactory(new PropertyValueFactory<Messreihe,Integer>("messreihenId"));
-		this.clmZeitIntervall.setCellValueFactory(new PropertyValueFactory<Messreihe,Integer>("zeitintervall"));
-		this.clmVerbraucher.setCellValueFactory(new PropertyValueFactory<Messreihe,String>("verbraucher"));
-		this.clmMessgroesse.setCellValueFactory(new PropertyValueFactory<Messreihe,String>("messgroesse"));
-//		CREDITS: 
-//		https://stackoverflow.com/questions/43148635/how-to-show-objects-in-tablecolumn
+
+		this.clmIdentnummer.setCellValueFactory(new PropertyValueFactory<Messreihe, Integer>("messreihenId"));
+		this.clmZeitIntervall.setCellValueFactory(new PropertyValueFactory<Messreihe, Integer>("zeitintervall"));
+		this.clmVerbraucher.setCellValueFactory(new PropertyValueFactory<Messreihe, String>("verbraucher"));
+		this.clmMessgroesse.setCellValueFactory(new PropertyValueFactory<Messreihe, String>("messgroesse"));
+		// CREDITS:
+		// https://stackoverflow.com/questions/43148635/how-to-show-objects-in-tablecolumn
 		this.clmMessungen.setCellValueFactory(Messreihe -> {
 			@SuppressWarnings("rawtypes") // prop
 			SimpleObjectProperty prop = new SimpleObjectProperty();
 			prop.setValue(Messreihe.getValue().gibMessungAus());
 			return prop;
 		});
-		
-		
+
 		this.tableView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Object>() {
-		    @Override
-		    public void changed(ObservableValue observableValue, Object oldValue, Object newValue) {
-		    	if(tableView.getSelectionModel().getSelectedItem() != null) {
-		    		btnMessreiheStarten.setDisable(false);
-		    		
-		    		Messreihe selectedRow = tableView.getSelectionModel().getSelectedItem();
-		    		int messreihenId = selectedRow.getMessreihenId();
-		    		int anzahlMessungenZuMessreihe = selectedRow.getMessungen().length;
-		    		
-		    		if(anzahlMessungenZuMessreihe == 0) {
-		    			btnMessreiheStarten.setDisable(false);
-		    		} else {
-		    			btnMessreiheStarten.setDisable(true);
-		    		}
-		    	}
-		    }
+			@Override
+			public void changed(ObservableValue observableValue, Object oldValue, Object newValue) {
+				if (tableView.getSelectionModel().getSelectedItem() != null) {
+					btnMessreiheStarten.setDisable(false);
+
+					Messreihe selectedRow = tableView.getSelectionModel().getSelectedItem();
+					int messreihenId = selectedRow.getMessreihenId();
+					int anzahlMessungenZuMessreihe = selectedRow.getMessungen().length;
+
+					if (anzahlMessungenZuMessreihe == 0) {
+						btnMessreiheStarten.setDisable(false);
+					} else {
+						btnMessreiheStarten.setDisable(true);
+					}
+				}
+			}
 		});
 	}
-	
-	
+
 	@FXML
 	public void speichereMessreiheInDB() {
 		int identNummerMessreihe = Integer.parseInt(this.txtMessreihenId.getText());
 		int zeitIntervallSekunden = Integer.parseInt(this.txtZeitintervall.getText());
 		String verbraucher = this.txtVerbraucher.getText();
-		String messgroesse = this.txtMessgroesse.getText();
+		String messgroesse = this.cbMessgroesse.getText();
 		Messreihe messreihe = new Messreihe(identNummerMessreihe, zeitIntervallSekunden, verbraucher, messgroesse);
 		try {
 			this.basisModel.speichereMessreiheInDb(messreihe);
@@ -112,12 +110,12 @@ public class BasisControl{
 			e.printStackTrace();
 		}
 		this.leseMessreihenInklusiveMessungenAusDb();
-		
-		// Zurücksetzen der Textfelder
+
+		// ZurÃ¼cksetzen der Textfelder
 		this.txtMessreihenId.setText("");
 		this.txtZeitintervall.setText("");
 		this.txtVerbraucher.setText("");
-		this.txtMessgroesse.setText("");
+		this.cbMessgroesse.setText("Leistung");
 
 	}
 
@@ -134,13 +132,13 @@ public class BasisControl{
 		Messreihe selectedRow = this.tableView.getSelectionModel().getSelectedItem();
 		int messreihenId = selectedRow.getMessreihenId();
 		int zeitIntervall = selectedRow.getZeitintervall();
-		String messgroesse = selectedRow.getMessgroesse() + "";
-		
+		String messgroesse = selectedRow.getMessgroesse();
+
 		this.btnMessreiheStoppen.setDisable(false);
 		this.btnMessreiheStarten.setDisable(true);
 		System.out.println("starteMessreihe");
 		System.out.println(messreihenId + " - " + zeitIntervall + " - " + messgroesse);
-		this.basisModel.starteMessreihe(messreihenId, zeitIntervall);
+		this.basisModel.starteMessreihe(messreihenId, zeitIntervall, messgroesse);
 	}
 
 	@FXML
@@ -154,6 +152,41 @@ public class BasisControl{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	@FXML
+	public void setLeistung() {
+		this.cbMessgroesse.setText("Leistung");
+	}
+
+	@FXML
+	public void setScheinleistung() {
+		this.cbMessgroesse.setText("Scheinleistung");
+	}
+
+	@FXML
+	public void setInduktiveBlindleistung() {
+		this.cbMessgroesse.setText("Induktive Blindleistung");
+	}
+
+	@FXML
+	public void setKapazitiveBlindleistung() {
+		this.cbMessgroesse.setText("Kapazitive Blindleistung");
+	}
+
+	@FXML
+	public void setArbeit() {
+		this.cbMessgroesse.setText("Arbeit");
+	}
+
+	@FXML
+	public void setStrom() {
+		this.cbMessgroesse.setText("Strom");
+	}
+
+	@FXML
+	public void setSpannung() {
+		this.cbMessgroesse.setText("Spannung");
 	}
 
 }

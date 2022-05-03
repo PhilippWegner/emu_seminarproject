@@ -1,4 +1,4 @@
-package de.emuseminar;
+package de.emuseminar.restful;
 
 import java.sql.*;
 
@@ -14,8 +14,6 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import de.emuseminar.restful.Messreihe;
-import de.emuseminar.restful.Messung;
 import de.emuseminar.restful.db.DbAktionen;
 
 @Path("/serviceEmu")

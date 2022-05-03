@@ -2,7 +2,7 @@
 
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>de.emuseminar.restful</groupId>
+	<groupId>de.emuseminar</groupId>
 	<artifactId>emu_seminarproject_server</artifactId>
 	<packaging>war</packaging>
 	<version>0.0.1-SNAPSHOT</version>

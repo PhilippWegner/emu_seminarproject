@@ -3,15 +3,13 @@ package gui;
 import java.sql.SQLException;
 import business.BasisModel;
 import business.Messreihe;
-import business.Messung;
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.control.MenuButton;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -25,7 +23,7 @@ public class BasisControl {
 	@FXML
 	private TextField txtVerbraucher;
 	@FXML
-	private MenuButton cbMessgroesse;
+	private ComboBox<String> cbMessgroesse;
 	@FXML
 	private Button btnMessreiheStoppen;
 	@FXML
@@ -98,7 +96,7 @@ public class BasisControl {
 		int identNummerMessreihe = Integer.parseInt(this.txtMessreihenId.getText());
 		int zeitIntervallSekunden = Integer.parseInt(this.txtZeitintervall.getText());
 		String verbraucher = this.txtVerbraucher.getText();
-		String messgroesse = this.cbMessgroesse.getText();
+		String messgroesse = this.cbMessgroesse.getSelectionModel().selectedItemProperty().getValue();
 		Messreihe messreihe = new Messreihe(identNummerMessreihe, zeitIntervallSekunden, verbraucher, messgroesse);
 		try {
 			this.basisModel.speichereMessreiheInDb(messreihe);
@@ -111,12 +109,10 @@ public class BasisControl {
 		}
 		this.leseMessreihenInklusiveMessungenAusDb();
 
-		// ZurÃ¼cksetzen der Textfelder
+		// Zurücksetzen der Textfelder
 		this.txtMessreihenId.setText("");
 		this.txtZeitintervall.setText("");
 		this.txtVerbraucher.setText("");
-		this.cbMessgroesse.setText("Leistung");
-
 	}
 
 	@FXML
@@ -152,41 +148,6 @@ public class BasisControl {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
-
-	@FXML
-	public void setLeistung() {
-		this.cbMessgroesse.setText("Leistung");
-	}
-
-	@FXML
-	public void setScheinleistung() {
-		this.cbMessgroesse.setText("Scheinleistung");
-	}
-
-	@FXML
-	public void setInduktiveBlindleistung() {
-		this.cbMessgroesse.setText("Induktive Blindleistung");
-	}
-
-	@FXML
-	public void setKapazitiveBlindleistung() {
-		this.cbMessgroesse.setText("Kapazitive Blindleistung");
-	}
-
-	@FXML
-	public void setArbeit() {
-		this.cbMessgroesse.setText("Arbeit");
-	}
-
-	@FXML
-	public void setStrom() {
-		this.cbMessgroesse.setText("Strom");
-	}
-
-	@FXML
-	public void setSpannung() {
-		this.cbMessgroesse.setText("Spannung");
 	}
 
 }

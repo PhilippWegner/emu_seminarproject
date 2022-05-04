@@ -78,7 +78,6 @@ public class BasisControl {
 					btnMessreiheStarten.setDisable(false);
 
 					Messreihe selectedRow = tableView.getSelectionModel().getSelectedItem();
-					int messreihenId = selectedRow.getMessreihenId();
 					int anzahlMessungenZuMessreihe = selectedRow.getMessungen().length;
 
 					if (anzahlMessungenZuMessreihe == 0) {

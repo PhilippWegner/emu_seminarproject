@@ -14,6 +14,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import net.sf.yad2xx.FTDIException;
 
 public class BasisControl {
 	@FXML
@@ -115,22 +116,24 @@ public class BasisControl {
 	}
 
 	@FXML
-	public void stoppeMessreihe() {
+	public void stoppeMessreihe() throws FTDIException {
 		this.btnMessreiheStarten.setDisable(true);
 		this.btnMessreiheStoppen.setDisable(true);
+		
 		System.out.println("stoppeMessreihe");
 		this.basisModel.stoppeMessreihe();
 	}
 
 	@FXML
-	public void starteMessreihe() {
+	public void starteMessreihe() throws FTDIException, InterruptedException {
+		this.btnMessreiheStoppen.setDisable(false);
+		this.btnMessreiheStarten.setDisable(true);
+		
 		Messreihe selectedRow = this.tableView.getSelectionModel().getSelectedItem();
 		int messreihenId = selectedRow.getMessreihenId();
 		int zeitIntervall = selectedRow.getZeitintervall();
 		String messgroesse = selectedRow.getMessgroesse();
 
-		this.btnMessreiheStoppen.setDisable(false);
-		this.btnMessreiheStarten.setDisable(true);
 		System.out.println("starteMessreihe");
 		System.out.println(messreihenId + " - " + zeitIntervall + " - " + messgroesse);
 		this.basisModel.starteMessreihe(messreihenId, zeitIntervall, messgroesse);

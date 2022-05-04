@@ -28,6 +28,8 @@ public class EmuService {
 
 	@GET
 	@Path("/messreihen")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
 	public String getMessreihen() throws ClassNotFoundException, SQLException, JsonProcessingException {
 		String messreihenJSON = "";
 		this.dbAktionen.connectDb();
@@ -38,7 +40,7 @@ public class EmuService {
 	}
 
 	@GET
-	@Consumes(MediaType.TEXT_PLAIN)
+	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/messreihe/{MessreihenId}/messungen")
 	public String getMessungen(@PathParam("MessreihenId") String MessreihenId)
@@ -70,7 +72,7 @@ public class EmuService {
 		this.dbAktionen.closeDb();
 		String artikelEndpoint = "/webapi/messreihe/" + messreihe.getMessreihenId();
 		System.out.println(artikelEndpoint);
-		// Response.Status.CREATED sollte 200 sein
+		// Response.Status.CREATED sollte 201 sein
 		return Response.status(Response.Status.CREATED).entity(artikelEndpoint).build();
 	}
 

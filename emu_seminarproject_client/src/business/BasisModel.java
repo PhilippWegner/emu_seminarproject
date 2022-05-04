@@ -1,6 +1,7 @@
 package business;
 
 import javafx.collections.*;
+import net.sf.yad2xx.FTDIException;
 
 import java.io.IOException;
 import java.sql.*;
@@ -49,7 +50,7 @@ public final class BasisModel {
 
 			WebResource webResource = client.resource(REST_URI + "/messung/" + messreihenId);
 			ClientResponse clientResponse = webResource.type("application/json").post(ClientResponse.class, output);
-			if (clientResponse.getStatus() != 200) {
+			if (clientResponse.getStatus() != 201) {
 				System.err.println("Fehler: clientResponse.STATUS " + clientResponse.getStatus());
 				System.err.println("Fehler: Entity " + clientResponse.getEntity(String.class));
 				return; // Ausstieg bei Fehler!
@@ -109,7 +110,7 @@ public final class BasisModel {
 			System.out.println("output:" + output);
 			ClientResponse clientResponse = webResource.accept("application/json").type("application/json")
 					.post(ClientResponse.class, output);
-			if (clientResponse.getStatus() != 200) {
+			if (clientResponse.getStatus() != 201) {
 				System.err.println("Fehler: clientResponse.STATUS " + clientResponse.getStatus());
 				System.err.println("Fehler: Entity " + clientResponse.getEntity(String.class));
 				return; // Ausstieg bei Fehler!
@@ -127,14 +128,13 @@ public final class BasisModel {
 		return "in getDaten";
 	}
 
-	public void starteMessreihe(int messreihenId, int zeitIntervall, String messgroesse) {
-		this.threadTimer = new ThreadTimer(messreihenId, zeitIntervall, messgroesse); // Damit der erste Eintrag nie 0
-																						// wird!
+	public void starteMessreihe(int messreihenId, int zeitIntervall, String messgroesse) throws FTDIException, InterruptedException {
+		this.threadTimer = new ThreadTimer(messreihenId, zeitIntervall, messgroesse); // Damit der erste Eintrag nie 0																// wird!
 		this.threadTimer.starteMessreihe();
 
 	}
 
-	public void stoppeMessreihe() {
+	public void stoppeMessreihe() throws FTDIException {
 		this.threadTimer.stoppeMessreihe();
 	}
 }

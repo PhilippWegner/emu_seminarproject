@@ -16,21 +16,28 @@ public class ThreadTimer extends Thread {
 	private boolean istAufnahmeGestart = false;
 	private BasisModel basisModel;
 
-	public ThreadTimer(int messreihenId, int zeitIntervall, String messgroesse) {
+	public ThreadTimer(int messreihenId, int zeitIntervall, String messgroesse) throws FTDIException, InterruptedException {
 		this.basisModel = BasisModel.getInstance();
 		this.messreihenId = messreihenId;
 		this.zeitIntervall = zeitIntervall;
 		this.messgroesse = messgroesse;
 		laufendeNummer = 1;
+		this.ecc = new EmuCheckConnection();
+		Thread.sleep(1000);
 	}
 
-	public void starteMessreihe() {
+	public void starteMessreihe() throws FTDIException, InterruptedException {
+		this.ecc.connect();
+		Thread.sleep(1000);
+		this.ecc.sendProgrammingMode();
+		Thread.sleep(1000);
 		this.istAufnahmeGestart = true;
 		this.start();
 	}
 
-	public void stoppeMessreihe() {
+	public void stoppeMessreihe() throws FTDIException {
 		this.istAufnahmeGestart = false;
+		this.ecc.disconnect();
 	}
 
 	private void speichereMessungInDb(int messreihenId, Messung messung) throws ClassNotFoundException, SQLException {
@@ -41,33 +48,26 @@ public class ThreadTimer extends Thread {
 		while (this.istAufnahmeGestart) {
 			Messung messung;
 			try {
-				EmuCheckConnection ecc = new EmuCheckConnection();
-				ecc.connect();
-				Thread.sleep(1000);
-				ecc.sendProgrammingMode();
-				Thread.sleep(1000);
-
 				if (this.messgroesse.contains("Leistung")) {
-					ecc.sendRequest(MESSWERT.Leistung);
+					this.ecc.sendRequest(MESSWERT.Leistung);
 				} else if (this.messgroesse.contains("Scheinleistung")) {
-					ecc.sendRequest(MESSWERT.Scheinleistung);
+					this.ecc.sendRequest(MESSWERT.Scheinleistung);
 				} else if (this.messgroesse.contains("Induktive Blindleistung")) {
-					ecc.sendRequest(MESSWERT.Induktive_Blindleistung);
+					this.ecc.sendRequest(MESSWERT.Induktive_Blindleistung);
 				} else if (this.messgroesse.contains("Kapazitive Blindleistung")) {
-					ecc.sendRequest(MESSWERT.Kapazitive_Blindleistung);
+					this.ecc.sendRequest(MESSWERT.Kapazitive_Blindleistung);
 				} else if (this.messgroesse.contains("Arbeit")) {
-					ecc.sendRequest(MESSWERT.Arbeit);
+					this.ecc.sendRequest(MESSWERT.Arbeit);
 				} else if (this.messgroesse.contains("Strom")) {
-					ecc.sendRequest(MESSWERT.Strom);
+					this.ecc.sendRequest(MESSWERT.Strom);
 				} else if (this.messgroesse.contains("Spannung")) {
-					ecc.sendRequest(MESSWERT.Spannung);
+					this.ecc.sendRequest(MESSWERT.Spannung);
 				} else {
-					ecc.sendRequest(MESSWERT.Leistung);
+					this.ecc.sendRequest(MESSWERT.Leistung);
 				}
 				Thread.sleep(1000);
-				ecc.disconnect();
 
-				messung = new Messung(laufendeNummer, ecc.gibErgebnisAus());
+				messung = new Messung(laufendeNummer, this.ecc.gibErgebnisAus());
 				laufendeNummer++;
 
 				this.speichereMessungInDb(this.messreihenId, messung);

@@ -36,6 +36,9 @@
 			          <String fx:value="Spannung" />
 			      </FXCollections>
                </items>
+               <value>
+               		<String fx:value="Leistung" />
+               </value>
             </ComboBox>
             <Button layoutX="570.0" layoutY="96.0" mnemonicParsing="false" onAction="#speichereMessreiheInDB" prefHeight="25.0" prefWidth="150.0" text="Messreihe speichern" />
             <Label layoutX="20" layoutY="150" text="Anzeige der Messreihen">

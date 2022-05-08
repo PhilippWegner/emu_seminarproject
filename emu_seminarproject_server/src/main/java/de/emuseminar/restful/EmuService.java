@@ -43,25 +43,21 @@ public class EmuService {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/messreihe/{MessreihenId}/messungen")
-	public String getMessungen(@PathParam("MessreihenId") String MessreihenId)
-			throws ClassNotFoundException, SQLException, JsonProcessingException {
+	public String getMessungen(@PathParam("MessreihenId") String MessreihenId) throws ClassNotFoundException, SQLException, JsonProcessingException {
 		String messungenJSON = "";
 		this.dbAktionen.connectDb();
 		int MessreihenIdInteger = Integer.parseInt(MessreihenId);
 		Messung[] messungen = this.dbAktionen.leseMessungen(MessreihenIdInteger);
 		this.dbAktionen.closeDb();
 		messungenJSON = this.objectMapper.writeValueAsString(messungen);
-
 		return messungenJSON;
 	}
 
 	@POST
 	@Path("/messreihe/{MessreihenId}")
 	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response createMessreihe(String input, @PathParam("MessreihenId") String MessreihenId)
-			throws JsonMappingException, JsonProcessingException, ClassNotFoundException, SQLException {
-		Messreihe messreihe = this.objectMapper.readValue(input, Messreihe.class);
+	@Produces(MediaType.TEXT_PLAIN)
+	public Response createMessreihe(Messreihe messreihe, @PathParam("MessreihenId") String MessreihenId) throws ClassNotFoundException, SQLException {
 		this.dbAktionen.connectDb();
 		try {
 			this.dbAktionen.fuegeMessreiheEin(messreihe);
@@ -79,14 +75,12 @@ public class EmuService {
 	@POST
 	@Path("/messung/{MessreihenId}")
 	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response createMessung(String input, @PathParam("MessreihenId") String MessreihenId)
-			throws ClassNotFoundException, SQLException, JsonMappingException, JsonProcessingException {
-		Messung messung = this.objectMapper.readValue(input, Messung.class);
-		int MessreihenIdInteger = Integer.parseInt(MessreihenId);
+	@Produces(MediaType.TEXT_PLAIN)
+	public Response createMessung(Messung messung, @PathParam("MessreihenId") String MessreihenId) throws ClassNotFoundException, SQLException {
+		int messreihenIdInteger = Integer.parseInt(MessreihenId);
 		this.dbAktionen.connectDb();
 		try {
-			this.dbAktionen.fuegeMessungEin(MessreihenIdInteger, messung);
+			this.dbAktionen.fuegeMessungEin(messreihenIdInteger, messung);
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return Response.status(Response.Status.CONFLICT).build();

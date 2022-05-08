@@ -1,4 +1,4 @@
-package business;
+package de.emuseminar.emu_seminarproject_client.business;
 
 public class Messung {
 	

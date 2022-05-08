@@ -1,9 +1,9 @@
-package business.emu;
+package de.emuseminar.emu_seminarproject_client.business.emu;
 
 import java.sql.SQLException;
 
-import business.BasisModel;
-import business.Messung;
+import de.emuseminar.emu_seminarproject_client.business.BasisModel;
+import de.emuseminar.emu_seminarproject_client.business.Messung;
 import net.sf.yad2xx.FTDIException;
 
 public class ThreadTimer extends Thread {

@@ -8,7 +8,7 @@
 <?import javafx.scene.control.cell.PropertyValueFactory?>
 <?import javafx.collections.*?>
 
-<BorderPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.BasisControl">
+<BorderPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.emuseminar.emu_seminarproject_client.gui.BasisControl">
    <center>
       <Pane prefHeight="490.0" prefWidth="750.0" BorderPane.alignment="CENTER">
          <children>

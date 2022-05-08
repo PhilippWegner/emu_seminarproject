@@ -1,8 +1,8 @@
-package gui;
+package de.emuseminar.emu_seminarproject_client.gui;
 
 import java.sql.SQLException;
-import business.BasisModel;
-import business.Messreihe;
+import de.emuseminar.emu_seminarproject_client.business.BasisModel;
+import de.emuseminar.emu_seminarproject_client.business.Messreihe;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -109,7 +109,7 @@ public class BasisControl {
 		}
 		this.leseMessreihenInklusiveMessungenAusDb();
 
-		// Zurücksetzen der Textfelder
+		// Zurï¿½cksetzen der Textfelder
 		this.txtMessreihenId.setText("");
 		this.txtZeitintervall.setText("");
 		this.txtVerbraucher.setText("");

@@ -1,4 +1,4 @@
-package business.emu;
+package de.emuseminar.emu_seminarproject_client.business.emu;
 
 import net.sf.yad2xx.*;
 

@@ -1,4 +1,4 @@
-package business;
+package de.emuseminar.emu_seminarproject_client.business;
 
 
 public class Messreihe {
@@ -8,7 +8,6 @@ public class Messreihe {
 	private String verbraucher;
 	private String messgroesse;
 	private Messung[] messungen;
-//	private String messungen;
 	
 	public Messreihe() {}
 	

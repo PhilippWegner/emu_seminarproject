@@ -37,12 +37,12 @@ public final class BasisModel {
 		return messreihen;
 	}
 
-	public void speichereMessungInDb(int messreihenId, Messung messung) throws ClassNotFoundException, SQLException {
+	public void speichereMessungInDb(int messreihenId, Messung messung) throws SQLException {
 		System.out.println("Posting Messung");
 		Response response = client.target(REST_URI + "/messung").path(String.valueOf(messreihenId)).request(MediaType.TEXT_PLAIN).post(Entity.entity(messung, MediaType.APPLICATION_JSON));
 		if (response.getStatus() != 201) {
 			System.err.println("Fehler: clientResponse.STATUS " + response.getStatus());
-			return; // Ausstieg bei Fehler!
+			throw new SQLException("Fehler beim Eintragen in die Datenbank!"); // Ausstieg bei Fehler!
 		}
 	}
 
@@ -63,7 +63,7 @@ public final class BasisModel {
 		
 		if (response.getStatus() != 201) {
 			System.err.println("Fehler: clientResponse.STATUS " + response.getStatus());
-			return; // Ausstieg bei Fehler!
+			throw new SQLException("Fehler beim Eintragen in die Datenbank!");
 		}
 	}
 

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Erstellungszeit: 26. Apr 2022 um 22:17
+-- Erstellungszeit: 25. Mai 2022 um 15:39
 -- Server-Version: 10.4.18-MariaDB
 -- PHP-Version: 8.0.3
 
@@ -34,15 +34,6 @@ CREATE TABLE `messreihe` (
   `Messgroesse` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
---
--- Daten für Tabelle `messreihe`
---
-
-INSERT INTO `messreihe` (`MessreihenId`, `Zeitintervall`, `Verbraucher`, `Messgroesse`) VALUES
-(1, 5, 'Lampe', 'Leistung'),
-(2, 10, 'Computer', 'Arbeit'),
-(3, 15, 'GPU', 'Leistung');
-
 -- --------------------------------------------------------
 
 --
@@ -56,23 +47,20 @@ CREATE TABLE `messung` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
--- Daten für Tabelle `messung`
+-- Indizes der exportierten Tabellen
 --
 
-INSERT INTO `messung` (`LaufendeNummer`, `Wert`, `MessreihenId`) VALUES
-(1, 4.6, 1),
-(2, 4.6, 1),
-(3, 4.5, 1),
-(4, 4.6, 1),
-(5, 4.5, 1),
-(6, 4.5, 1),
-(7, 4.6, 1),
-(8, 4.6, 1),
-(9, 4.6, 1),
-(1, 4.6, 2),
-(2, 4.6, 2),
-(1, 4.5, 3),
-(2, 4.6, 3);
+--
+-- Indizes für die Tabelle `messreihe`
+--
+ALTER TABLE `messreihe`
+  ADD PRIMARY KEY (`MessreihenId`);
+
+--
+-- Indizes für die Tabelle `messung`
+--
+ALTER TABLE `messung`
+  ADD UNIQUE KEY `LaufendeNummer` (`LaufendeNummer`,`MessreihenId`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

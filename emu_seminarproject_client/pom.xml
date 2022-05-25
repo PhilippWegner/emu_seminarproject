@@ -76,12 +76,6 @@
 			<classifier>resources</classifier>
 			<type>zip</type>
 		</dependency>
-		<dependency>
-			<groupId>org.jbehave.site</groupId>
-			<artifactId>jbehave-site-resources</artifactId>
-			<version>3.5</version>
-			<type>zip</type>
-		</dependency>
 	</dependencies>
 	<build>
 		<resources>
@@ -129,7 +123,7 @@
 				<version>2.22.2</version>
 				<configuration>
 					<argLine>
-					 	--add-opens de.emuseminar.emu_seminarproject_client/de.emuseminar.emu_seminarproject_client.jbehave.step=ALL-UNNAMED
+					 	--add-opens de.emuseminar.emu_seminarproject_client/de.emuseminar.emu_seminarproject_client.junit=ALL-UNNAMED
 					 </argLine>
 				</configuration>
 			</plugin>

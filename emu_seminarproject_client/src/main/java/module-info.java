@@ -9,7 +9,6 @@ module de.emuseminar.emu_seminarproject_client {
 	
 	requires jakarta.ws.rs;
 	requires jakarta.xml.bind;
-	requires jbehave.core;
 	
 
     opens de.emuseminar.emu_seminarproject_client to javafx.fxml, javafx.control, javafx.graphics;

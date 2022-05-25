@@ -1,4 +1,4 @@
-package de.emuseminar.emu_seminarproject_client;
+package de.emuseminar.emu_seminarproject_client.jbehave.step;
 
 //import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;

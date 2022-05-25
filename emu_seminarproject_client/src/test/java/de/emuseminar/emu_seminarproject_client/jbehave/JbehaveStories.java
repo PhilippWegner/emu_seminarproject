@@ -1,4 +1,4 @@
-package de.emuseminar.emu_seminarproject_client;
+package de.emuseminar.emu_seminarproject_client.jbehave;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -10,6 +10,7 @@ import org.jbehave.core.reporters.StoryReporterBuilder;
 import org.jbehave.core.steps.*;
 import org.jbehave.core.steps.ParameterConverters.*;
 
+import de.emuseminar.emu_seminarproject_client.jbehave.step.EmuMessreihenAnsehenSteps;
 
 import static org.jbehave.core.io.CodeLocations.codeLocationFromClass;
 import static org.jbehave.core.reporters.Format.*;

@@ -93,10 +93,20 @@ public class BasisControl {
 
 	@FXML
 	public void speichereMessreiheInDB() {
-		int identNummerMessreihe = Integer.parseInt(this.txtMessreihenId.getText());
-		int zeitIntervallSekunden = Integer.parseInt(this.txtZeitintervall.getText());
-		String verbraucher = this.txtVerbraucher.getText();
-		String messgroesse = this.cbMessgroesse.getSelectionModel().selectedItemProperty().getValue();
+		if(this.txtMessreihenId.getText().isEmpty()
+				|| this.txtZeitintervall.getText().isBlank()
+				|| this.txtZeitintervall.getText().isEmpty()
+				|| this.txtVerbraucher.getText().isEmpty()
+				|| this.cbMessgroesse.getValue().isEmpty()) {
+			System.out.println("Felder nicht befuellt.");
+			return;
+		}
+			
+		int identNummerMessreihe = Integer.parseInt(this.txtMessreihenId.getText().trim());
+		int zeitIntervallSekunden = Integer.parseInt(this.txtZeitintervall.getText().trim());
+		String verbraucher = this.txtVerbraucher.getText().trim();
+		String messgroesse = this.cbMessgroesse.getValue().trim();
+		
 		Messreihe messreihe = new Messreihe(identNummerMessreihe, zeitIntervallSekunden, verbraucher, messgroesse);
 		try {
 			this.basisModel.speichereMessreiheInDb(messreihe);
@@ -109,10 +119,11 @@ public class BasisControl {
 		}
 		this.leseMessreihenInklusiveMessungenAusDb();
 
-		// Zur�cksetzen der Textfelder
+		// Zurücksetzen der Textfelder
 		this.txtMessreihenId.setText("");
 		this.txtZeitintervall.setText("");
 		this.txtVerbraucher.setText("");
+//		this.cbMessgroesse.setValue("");
 	}
 
 	@FXML

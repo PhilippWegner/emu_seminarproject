@@ -24,7 +24,7 @@
             <TextField fx:id="txtMessreihenId" layoutX="182.0" layoutY="70.0" prefHeight="25.0" prefWidth="100.0" />
             <TextField fx:id="txtZeitintervall" layoutX="182.0" layoutY="105.0" prefHeight="25.0" prefWidth="100.0" />
             <TextField fx:id="txtVerbraucher" layoutX="421.0" layoutY="70.0" prefHeight="25.0" prefWidth="100.0" />
-            <ComboBox fx:id="cbMessgroesse" layoutX="421.0" layoutY="105.0" prefHeight="25.0" prefWidth="100.0" promptText="Leistung">
+            <ComboBox fx:id="cbMessgroesse" value="Leistung" promptText="Leistung" layoutX="421.0" layoutY="105.0" prefHeight="25.0" prefWidth="100.0">
                <items>
                   <FXCollections fx:factory="observableArrayList">
 			          <String fx:value="Leistung" />
@@ -36,9 +36,6 @@
 			          <String fx:value="Spannung" />
 			      </FXCollections>
                </items>
-               <value>
-               		<String fx:value="Leistung" />
-               </value>
             </ComboBox>
             <Button layoutX="570.0" layoutY="96.0" mnemonicParsing="false" onAction="#speichereMessreiheInDB" prefHeight="25.0" prefWidth="150.0" text="Messreihe speichern" />
             <Label layoutX="20" layoutY="150" text="Anzeige der Messreihen">

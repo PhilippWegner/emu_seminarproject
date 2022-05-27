@@ -79,9 +79,10 @@
 
                </columns>
             </TableView>
-
-            <Button fx:id="btnMessreiheStoppen" disable="true" layoutX="385.0" layoutY="440" mnemonicParsing="false" onAction="#stoppeMessreihe" prefHeight="25.0" prefWidth="150" text="Messreihe stoppen" />
+			
+			<Button fx:id="btnMessreiheAnzeigen" disable="true" layoutX="35.0" layoutY="440" mnemonicParsing="false" onAction="#btnMessreiheOeffnen" prefHeight="25.0" prefWidth="150" text="Messreihe anzeigen" />
             <Button fx:id="btnMessreiheStarten" disable="true" layoutX="210.0" layoutY="440" mnemonicParsing="false" onAction="#starteMessreihe" prefHeight="25.0" prefWidth="150" text="Messreihe starten" />
+            <Button fx:id="btnMessreiheStoppen" disable="true" layoutX="385.0" layoutY="440" mnemonicParsing="false" onAction="#stoppeMessreihe" prefHeight="25.0" prefWidth="150" text="Messreihe stoppen" />
             <Button layoutX="570.0" layoutY="440" mnemonicParsing="false" onAction="#leseMessreihenInklusiveMessungenAusDb" prefHeight="25.0" prefWidth="150" text="Messreihen lesen" />
          </children>
       </Pane>

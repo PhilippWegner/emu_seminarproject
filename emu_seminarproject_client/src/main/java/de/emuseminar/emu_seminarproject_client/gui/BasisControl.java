@@ -1,5 +1,6 @@
 package de.emuseminar.emu_seminarproject_client.gui;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import de.emuseminar.emu_seminarproject_client.business.BasisModel;
 import de.emuseminar.emu_seminarproject_client.business.Messreihe;
@@ -8,12 +9,16 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.BorderPane;
+import javafx.stage.Stage;
 import net.sf.yad2xx.FTDIException;
 
 public class BasisControl {
@@ -29,6 +34,8 @@ public class BasisControl {
 	private Button btnMessreiheStoppen;
 	@FXML
 	private Button btnMessreiheStarten;
+	@FXML
+	private Button btnMessreiheAnzeigen;
 	@FXML
 	private TableView<Messreihe> tableView;
 	@FXML
@@ -87,26 +94,27 @@ public class BasisControl {
 						btnMessreiheStarten.setDisable(true);
 					}
 				}
+				if (tableView.getSelectionModel().getSelectedItem() != null) {
+					btnMessreiheAnzeigen.setDisable(false);
+				}
 			}
 		});
 	}
 
 	@FXML
 	public void speichereMessreiheInDB() {
-		if(this.txtMessreihenId.getText().isEmpty()
-				|| this.txtZeitintervall.getText().isBlank()
-				|| this.txtZeitintervall.getText().isEmpty()
-				|| this.txtVerbraucher.getText().isEmpty()
+		if (this.txtMessreihenId.getText().isEmpty() || this.txtZeitintervall.getText().isBlank()
+				|| this.txtZeitintervall.getText().isEmpty() || this.txtVerbraucher.getText().isEmpty()
 				|| this.cbMessgroesse.getValue().isEmpty()) {
 			System.out.println("Felder nicht befuellt.");
 			return;
 		}
-			
+
 		int identNummerMessreihe = Integer.parseInt(this.txtMessreihenId.getText().trim());
 		int zeitIntervallSekunden = Integer.parseInt(this.txtZeitintervall.getText().trim());
 		String verbraucher = this.txtVerbraucher.getText().trim();
 		String messgroesse = this.cbMessgroesse.getValue().trim();
-		
+
 		Messreihe messreihe = new Messreihe(identNummerMessreihe, zeitIntervallSekunden, verbraucher, messgroesse);
 		try {
 			this.basisModel.speichereMessreiheInDb(messreihe);
@@ -130,7 +138,7 @@ public class BasisControl {
 	public void stoppeMessreihe() throws FTDIException {
 		this.btnMessreiheStarten.setDisable(true);
 		this.btnMessreiheStoppen.setDisable(true);
-		
+
 		System.out.println("stoppeMessreihe");
 		this.basisModel.stoppeMessreihe();
 	}
@@ -139,7 +147,7 @@ public class BasisControl {
 	public void starteMessreihe() throws FTDIException, InterruptedException {
 		this.btnMessreiheStoppen.setDisable(false);
 		this.btnMessreiheStarten.setDisable(true);
-		
+
 		Messreihe selectedRow = this.tableView.getSelectionModel().getSelectedItem();
 		int messreihenId = selectedRow.getMessreihenId();
 		int zeitIntervall = selectedRow.getZeitintervall();
@@ -161,6 +169,25 @@ public class BasisControl {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	@FXML
+	public void btnMessreiheOeffnen() throws IOException {
+		Stage fensterDiagramm = new Stage();
+		fensterDiagramm.setTitle("Kurvendiagramm");
+		FXMLLoader loader = new FXMLLoader();
+		System.out.println("LOCATION2: " + getClass().getResource("DiagrammView.fxml"));
+		loader.setLocation(getClass().getResource("DiagrammView.fxml"));
+		
+		BorderPane root = loader.load();
+		Scene scene = new Scene(root, 450, 450);
+		
+		DiagrammControl diagrammControl = loader.getController();
+		Messreihe selectedRow = tableView.getSelectionModel().getSelectedItem();
+		diagrammControl.diagrammBefuellen(selectedRow);
+		
+		fensterDiagramm.setScene(scene);
+		fensterDiagramm.showAndWait();
 	}
 
 }

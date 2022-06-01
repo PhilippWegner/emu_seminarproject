@@ -17,7 +17,7 @@ public class Messreihe {
 			throw new IllegalArgumentException("Die MessreihenID darf nicht kleiner als 1 sein!");
 		}
 		if(zeitintervall < 15) {
-			throw new IllegalArgumentException("Das Zeitintervall darf nicht kleiner als 1 sein!");
+			throw new IllegalArgumentException("Das Zeitintervall darf nicht kleiner als 15 sein!");
 		}
 		if(verbraucher.equals("")) {
 			throw new IllegalArgumentException("Der Verbraucher darf nicht leer sein!");

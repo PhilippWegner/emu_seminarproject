@@ -42,7 +42,8 @@ class MessreihenJUnitTest {
 	 * Nur 1 Testcase!
 	 * 
 	 */
-	// 4.2.1)
+	
+	// 4.2.1) [STANDARD]
 	@Test
 	void constructorTest01() {
 		this.messreihe = new Messreihe(1, 20, "LED", "Leistung");
@@ -52,102 +53,87 @@ class MessreihenJUnitTest {
 				() -> Assert.assertEquals("Leistung", this.messreihe.getMessgroesse()));
 	}
 
-	/*
-	 * 
-	 * Äquivalenztest
-	 * Fall 01:
-	 * ID = 1
-	 * Zeitintervall = 20
-	 * Verbraucher = LED
-	 * Messgroesse = Leistung
-	 * 
-	 * Fall 02:
-	 * ID = 1
-	 * Zeitinterval = 20
-	 * Verbraucher = LED
-	 * Messgroesse = Arbeit
-	 * 
-	 */
-	// 4.2.2)
+
+	// 4.2.2) [ERWEITERUNGSPUNKT]
 	@ParameterizedTest
 	@ValueSource(strings = { "Leistung", "Arbeit" })
 	void constructorTest02(String messgroesse) {
-		this.messreihe = new Messreihe(1, 15, "LED", messgroesse);
+		this.messreihe = new Messreihe(1, 20, "LED", messgroesse);
 		Assertions.assertAll(() -> Assert.assertEquals(1, this.messreihe.getMessreihenId()),
-				() -> Assert.assertEquals(15, this.messreihe.getZeitintervall()),
+				() -> Assert.assertEquals(20, this.messreihe.getZeitintervall()),
 				() -> Assert.assertEquals("LED", this.messreihe.getVerbraucher()),
 				() -> Assert.assertEquals(messgroesse, this.messreihe.getMessgroesse()));
 	}
 	
-	/*
-	 * 
-	 * Äquivalenzklasse
-	 * Fall 01:
-	 * ID <= 0: 
-	 * 
-	 * Fall 02:
-	 * Zeitintervall < 15: 
-	 * 
-	 * Fall 03:
-	 * Verbraucher == null:
-	 * 
-	 * Fall 04:
-	 * Alles einstellbare ist fehlerhaft:
-	 * Erster Fehler wird zurueckgemeldet (ID)
-	 * 
-	 */
+	
 	// 4.2.3)
 	@ParameterizedTest
 	@MethodSource("aequivalenzklassenTestParameter")
-	void aequivalenzklassenTest(int messreihenId, int zeitintervall, String verbraucher, String messgroesse,
-			String exceptionMessage) {
-		Exception exc = Assert.assertThrows(IllegalArgumentException.class,
-				() -> new Messreihe(messreihenId, zeitintervall, verbraucher, messgroesse));
-		Assert.assertTrue(exc.getMessage().contains(exceptionMessage));
-
+	void aequivalenzklassenTest(int messreihenId, int zeitintervall, String verbraucher, String messgroesse, String exceptionMessage) {
+		if(exceptionMessage != null) {
+			Exception exc = Assert.assertThrows(IllegalArgumentException.class, () -> new Messreihe(messreihenId, zeitintervall, verbraucher, messgroesse));
+			Assert.assertTrue(exc.getMessage().contains(exceptionMessage));			
+		} else {
+			messreihe = new Messreihe(messreihenId, zeitintervall, verbraucher, messgroesse);
+			Assert.assertTrue(messreihe != null);
+		}
 	}
 	
 	/*
-	 * U1 	:= 	{..., -2, -1, 0, 1, 2, ...}
-	 * U2 	:= 	{..., 12, 13, 14} x {15, 16, 17, ...}
-	 * U3 	:= 	{""} x {null} x {"AaBbCc..."}
-	 * U4 	:= 	{"Arbeit", "Leistung"} x {"AaBbCc..."}
 	 * 
-	 * 01:	{.., -2, -1, 0, 1, 2, ...} 	x {..., 12, 13, 14} x {""} 			x {"Arbeit", "Leistung"}	<<<
-	 * 02:	{.., -2, -1, 0, 1, 2, ...} 	x {..., 12, 13, 14} x {null} 		x {"Arbeit", "Leistung"}	<<<
-	 * 03:	{.., -2, -1, 0, 1, 2, ...} 	x {..., 12, 13, 14} x {"AaBbCc..."} x {"Arbeit", "Leistung"}	<<<
 	 * --------------------------------------------------------------------------------------------
-	 * 04:	{.., -2, -1, 0, 1, 2, ...} 	x {15, 16, 17, ...} x {""} 			x {"Arbeit", "Leistung"}	<<<
-	 * 05:	{.., -2, -1, 0, 1, 2, ...} 	x {15, 16, 17, ...} x {null} 		x {"Arbeit", "Leistung"}	<<<
-	 * 06:	{.., -2, -1, 0, 1, 2, ...} 	x {15, 16, 17, ...} x {"AaBbCc..."} x {"Arbeit", "Leistung"}	<<<
+	 * U1 [messreihenId]	:= 	{..., -2, -1, 0, 1, 2, ...}
+	 * U2 [zeitintervall]	:= 	{..., 12, 13, 14} x {15, 16, 17, ...}
+	 * U3 [verbraucher]		:= 	{""} x {null} x {"AaBbCc..."}
+	 * U4 [messgroesse]		:= 	{"Arbeit", "Leistung"} x {"AaBbCc..."}
 	 * --------------------------------------------------------------------------------------------
-	 * 07:	{.., -2, -1, 0, 1, 2, ...} 	x {..., 12, 13, 14} x {""} 			x {"AaBbCc..."}	<<<
-	 * 08:	{.., -2, -1, 0, 1, 2, ...} 	x {..., 12, 13, 14} x {null} 		x {"AaBbCc..."}	<<<
-	 * 09:	{.., -2, -1, 0, 1, 2, ...} 	x {..., 12, 13, 14} x {"AaBbCc..."} x {"AaBbCc..."}	<<<
+	 * 01:	{.., -2, -1, 0, 1, 2, ...} 	x {..., 12, 13, 14} x {""} 			x {"Arbeit", "Leistung"}	| => UNGÜLTIGER
+	 * 02:	{.., -2, -1, 0, 1, 2, ...} 	x {..., 12, 13, 14} x {null} 		x {"Arbeit", "Leistung"}	| => UNGÜLTIGER
+	 * 03:	{.., -2, -1, 0, 1, 2, ...} 	x {..., 12, 13, 14} x {"AaBbCc..."} x {"Arbeit", "Leistung"}	| => UNGÜLTIGER
 	 * --------------------------------------------------------------------------------------------
-	 * 10:	{.., -2, -1, 0, 1, 2, ...} 	x {15, 16, 17, ...} x {""} 			x {"AaBbCc..."}	<<<
-	 * 11:	{.., -2, -1, 0, 1, 2, ...} 	x {15, 16, 17, ...} x {null} 		x {"AaBbCc..."}	<<<
-	 * 12:	{.., -2, -1, 0, 1, 2, ...} 	x {15, 16, 17, ...} x {"AaBbCc..."} x {"AaBbCc..."}	<<<
+	 * 04:	{.., -2, -1, 0, 1, 2, ...} 	x {15, 16, 17, ...} x {""} 			x {"Arbeit", "Leistung"}	| => UNGÜLTIGER
+	 * 05:	{.., -2, -1, 0, 1, 2, ...} 	x {15, 16, 17, ...} x {null} 		x {"Arbeit", "Leistung"}	| => UNGÜLTIGER
+	 * 06:	{.., -2, -1, 0, 1, 2, ...} 	x {15, 16, 17, ...} x {"AaBbCc..."} x {"Arbeit", "Leistung"}	| => GÜLTIGER
+	 * --------------------------------------------------------------------------------------------
+	 * 07:	{.., -2, -1, 0, 1, 2, ...} 	x {..., 12, 13, 14} x {""} 			x {"AaBbCc..."}				| => UNGÜLTIGER
+	 * 08:	{.., -2, -1, 0, 1, 2, ...} 	x {..., 12, 13, 14} x {null} 		x {"AaBbCc..."}				| => UNGÜLTIGER
+	 * 09:	{.., -2, -1, 0, 1, 2, ...} 	x {..., 12, 13, 14} x {"AaBbCc..."} x {"AaBbCc..."}				| => UNGÜLTIGER
+	 * --------------------------------------------------------------------------------------------
+	 * 10:	{.., -2, -1, 0, 1, 2, ...} 	x {15, 16, 17, ...} x {""} 			x {"AaBbCc..."}				| => UNGÜLTIGER
+	 * 11:	{.., -2, -1, 0, 1, 2, ...} 	x {15, 16, 17, ...} x {null} 		x {"AaBbCc..."}				| => UNGÜLTIGER
+	 * 12:	{.., -2, -1, 0, 1, 2, ...} 	x {15, 16, 17, ...} x {"AaBbCc..."} x {"AaBbCc..."}				| => UNGÜLTIGER
 	 * --------------------------------------------------------------------------------------------
 	 * 
-	 * 
+	 * --------------------------------------------------------------------------------------------
+	 * VERSCHMELZEN VON 	01,02,03 	mit 	07,08,09 	--> U2 [zeitintervall] 	{..., 12, 13, 14} 	| => Exception
+	 * VERSCHMELZEN VON 	04 			mit 	05,10,11 	--> U3 [verbraucher] 	{""} x {null} 		| => Exception
+	 * --------------------------------------------------------------------------------------------
+	 * 01:	{.., -2, -1, 0, 1, 2, ...} 	x {..., 12, 13, 14} x {""} 			x {"Arbeit", "Leistung"}	| => UNGÜLTIGER
+	 * 02:	{.., -2, -1, 0, 1, 2, ...} 	x {..., 12, 13, 14} x {null} 		x {"Arbeit", "Leistung"}	| => UNGÜLTIGER
+	 * 03:	{.., -2, -1, 0, 1, 2, ...} 	x {..., 12, 13, 14} x {"AaBbCc..."} x {"Arbeit", "Leistung"}	| => UNGÜLTIGER
+	 * 04:	{.., -2, -1, 0, 1, 2, ...} 	x {15, 16, 17, ...} x {""} 			x {"Arbeit", "Leistung"}	| => UNGÜLTIGER
+	 * 06:	{.., -2, -1, 0, 1, 2, ...} 	x {15, 16, 17, ...} x {"AaBbCc..."} x {"Arbeit", "Leistung"}	| => GÜLTIGER
+	 * 12:	{.., -2, -1, 0, 1, 2, ...} 	x {15, 16, 17, ...} x {"AaBbCc..."} x {"AaBbCc..."}				| => UNGÜLTIGER
+	 * --------------------------------------------------------------------------------------------
 	 * 
 	 */
+	
+	// 4.2.2
 	private static Stream<Arguments> aequivalenzklassenTestParameter() {
 		return Arrays.stream(new Arguments[] {
-				Arguments.of(0, 15, "LED", "Leistung", "Die MessreihenID darf nicht kleiner als 1 sein!"),
-				Arguments.of(1, 14, "LED", "Leistung", "Das Zeitintervall darf nicht kleiner als 15 sein!"),
-				Arguments.of(1, 15, "", "Leistung", "Der Verbraucher darf nicht leer sein!"),
-				Arguments.of(-10, 10, "", "Leistung", "Die MessreihenID darf nicht kleiner als 1 sein!"), });
+				//01 => UNGÜLTIGER
+				Arguments.of(0, 14, "", "Arbeit", "Das Zeitintervall darf nicht kleiner als 15 sein!"),
+				//02 => UNGÜLTIGER
+				Arguments.of(0, 14, null, "Leistung", "Das Zeitintervall darf nicht kleiner als 15 sein!"),
+				//03 => UNGÜLTIGER
+				Arguments.of(0, 14, "LED", "Arbeit", "Das Zeitintervall darf nicht kleiner als 15 sein!"),
+				//04 => UNGÜLTIGER
+				Arguments.of(0, 15, "", "Leistung", "Der Verbraucher darf nicht leer sein!"),
+				//06 => GÜLTIGER
+				Arguments.of(0, 15, "Lampe", "Arbeit", null),
+				//12 => UNGÜLTIGER
+				Arguments.of(0, 15, "Laptop", "Irgendwas", "Die Messgröße ist nicht zulässig!")});	
 	}
-
-//	@Test
-//	void testWithFailure() {
-//		Exception exc = Assert.assertThrows(IllegalArgumentException.class, 
-//				() -> new Messreihe(42, 42, "LED", "Leistung"));
-//		Assert.assertTrue(exc.getMessage().contains("Exception ist nicht definiert!"));
-//		
-//	}
 	
 	// 6.2.1)
 	// if(zeitintervall >= 15 && zeitintervall <= 3600):

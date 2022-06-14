@@ -13,14 +13,24 @@ public class Messreihe {
 	
 	public Messreihe(int messreihenId, int zeitintervall, String verbraucher, String messgroesse) {
 		super();
-		if(messreihenId < 1) {
-			throw new IllegalArgumentException("Die MessreihenID darf nicht kleiner als 1 sein!");
-		}
+//		if(messreihenId < 1) {
+//			throw new IllegalArgumentException("Die MessreihenID darf nicht kleiner als 1 sein!");
+//		}
 		if(zeitintervall < 15) {
 			throw new IllegalArgumentException("Das Zeitintervall darf nicht kleiner als 15 sein!");
 		}
-		if(verbraucher.equals("")) {
+		if(verbraucher.equals("") || verbraucher == null) {
 			throw new IllegalArgumentException("Der Verbraucher darf nicht leer sein!");
+		}
+		if(!messgroesse.equals("Arbeit") & 
+				!messgroesse.equals("Leistung") & 
+				!messgroesse.equals("Scheinleistung") & 
+				!messgroesse.equals("Induktive Blindleistung") & 
+				!messgroesse.equals("Kapazitive Blindleistung") & 
+				!messgroesse.equals("Arbeit") & 
+				!messgroesse.equals("Strom") & 
+				!messgroesse.equals("Spannung")) {
+			throw new IllegalArgumentException("Die Messgröße ist nicht zulässig!");
 		}
 		
 		this.messreihenId = messreihenId;

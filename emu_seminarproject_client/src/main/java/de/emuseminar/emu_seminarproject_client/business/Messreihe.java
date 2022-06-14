@@ -28,6 +28,18 @@ public class Messreihe {
 		this.verbraucher = verbraucher;
 		this.messgroesse = messgroesse;
 	}
+	
+	public Messreihe(int messreihenId, int zeitintervall) throws IllegalArgumentException {
+		super();
+		this.messreihenId = messreihenId;
+		if(zeitintervall >= 15 && zeitintervall <= 3600) {
+			this.zeitintervall = zeitintervall;
+		} else if(zeitintervall < 15) {
+			throw new IllegalArgumentException("Das Zeitintervall muss mindestens 15 Sekunden sein!");
+		} else {
+			throw new IllegalArgumentException("Das Zeitintervall darf höchstens 3600 Sekunden lang sein!");
+		}
+	}
 
 	public int getMessreihenId() {
 		return messreihenId;

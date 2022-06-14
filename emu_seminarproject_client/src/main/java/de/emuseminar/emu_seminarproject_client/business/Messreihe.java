@@ -19,7 +19,7 @@ public class Messreihe {
 		if(zeitintervall < 15) {
 			throw new IllegalArgumentException("Das Zeitintervall darf nicht kleiner als 15 sein!");
 		}
-		if(verbraucher.equals("") || verbraucher == null) {
+		if(verbraucher == null || verbraucher.equals("")) {
 			throw new IllegalArgumentException("Der Verbraucher darf nicht leer sein!");
 		}
 		if(!messgroesse.equals("Arbeit") & 

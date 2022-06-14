@@ -89,31 +89,34 @@ class MessreihenJUnitTest {
 	 * --------------------------------------------------------------------------------------------
 	 * 01:	{.., -2, -1, 0, 1, 2, ...} 	x {..., 12, 13, 14} x {""} 			x {"Arbeit", "Leistung"}	| => UNGÜLTIGER
 	 * 02:	{.., -2, -1, 0, 1, 2, ...} 	x {..., 12, 13, 14} x {null} 		x {"Arbeit", "Leistung"}	| => UNGÜLTIGER
-	 * 03:	{.., -2, -1, 0, 1, 2, ...} 	x {..., 12, 13, 14} x {"AaBbCc..."} x {"Arbeit", "Leistung"}	| => UNGÜLTIGER
+	 * 03:	{.., -2, -1, 0, 1, 2, ...} 	x {..., 12, 13, 14} x {"AaBbCc..."} x {"Arbeit", "Leistung"}	| => UNGÜLTIGER  	<<<
 	 * --------------------------------------------------------------------------------------------
-	 * 04:	{.., -2, -1, 0, 1, 2, ...} 	x {15, 16, 17, ...} x {""} 			x {"Arbeit", "Leistung"}	| => UNGÜLTIGER
-	 * 05:	{.., -2, -1, 0, 1, 2, ...} 	x {15, 16, 17, ...} x {null} 		x {"Arbeit", "Leistung"}	| => UNGÜLTIGER
-	 * 06:	{.., -2, -1, 0, 1, 2, ...} 	x {15, 16, 17, ...} x {"AaBbCc..."} x {"Arbeit", "Leistung"}	| => GÜLTIGER
+	 * 04:	{.., -2, -1, 0, 1, 2, ...} 	x {15, 16, 17, ..} 	x {""} 			x {"Arbeit", "Leistung"}	| => UNGÜLTIGER		<<<
+	 * 05:	{.., -2, -1, 0, 1, 2, ...} 	x {15, 16, 17, ..} 	x {null} 		x {"Arbeit", "Leistung"}	| => UNGÜLTIGER		<<<
+	 * 06:	{.., -2, -1, 0, 1, 2, ...} 	x {15, 16, 17, ..} 	x {"AaBbCc..."} x {"Arbeit", "Leistung"}	| => GÜLTIGER		<<<
 	 * --------------------------------------------------------------------------------------------
 	 * 07:	{.., -2, -1, 0, 1, 2, ...} 	x {..., 12, 13, 14} x {""} 			x {"AaBbCc..."}				| => UNGÜLTIGER
 	 * 08:	{.., -2, -1, 0, 1, 2, ...} 	x {..., 12, 13, 14} x {null} 		x {"AaBbCc..."}				| => UNGÜLTIGER
 	 * 09:	{.., -2, -1, 0, 1, 2, ...} 	x {..., 12, 13, 14} x {"AaBbCc..."} x {"AaBbCc..."}				| => UNGÜLTIGER
 	 * --------------------------------------------------------------------------------------------
-	 * 10:	{.., -2, -1, 0, 1, 2, ...} 	x {15, 16, 17, ...} x {""} 			x {"AaBbCc..."}				| => UNGÜLTIGER
-	 * 11:	{.., -2, -1, 0, 1, 2, ...} 	x {15, 16, 17, ...} x {null} 		x {"AaBbCc..."}				| => UNGÜLTIGER
-	 * 12:	{.., -2, -1, 0, 1, 2, ...} 	x {15, 16, 17, ...} x {"AaBbCc..."} x {"AaBbCc..."}				| => UNGÜLTIGER
+	 * 10:	{.., -2, -1, 0, 1, 2, ...} 	x {15, 16, 17, ..} 	x {""} 			x {"AaBbCc..."}				| => UNGÜLTIGER
+	 * 11:	{.., -2, -1, 0, 1, 2, ...} 	x {15, 16, 17, ..} 	x {null} 		x {"AaBbCc..."}				| => UNGÜLTIGER
+	 * 12:	{.., -2, -1, 0, 1, 2, ...} 	x {15, 16, 17, ..} 	x {"AaBbCc..."} x {"AaBbCc..."}				| => UNGÜLTIGER		<<<
 	 * --------------------------------------------------------------------------------------------
 	 * 
 	 * --------------------------------------------------------------------------------------------
-	 * VERSCHMELZEN VON 	01,02,03 	mit 	07,08,09 	--> U2 [zeitintervall] 	{..., 12, 13, 14} 	| => Exception
-	 * VERSCHMELZEN VON 	04 			mit 	05,10,11 	--> U3 [verbraucher] 	{""} x {null} 		| => Exception
+	 * VERSCHMELZEN VON 	01,02,03,07,08,09 	ZU 		03 		--> U2 [zeitintervall] 	{..., 12, 13, 14} 	| => Exception
+	 * VERSCHMELZEN VON 	04,05				ZU		04,05 	--> U3 [verbraucher] 	{""} x {null} 		| => Exception
+	 * VERSCHMELZEN VON 	06					ZU		06 												  	| => KEINE Exception
+	 * VERSCHMELZEN VON		10,11,12			ZU		12 		--> U3 [messgroesse] 	{"AaBbCc..."} 		| => Exception
+	 * 
 	 * --------------------------------------------------------------------------------------------
-	 * 01:	{.., -2, -1, 0, 1, 2, ...} 	x {..., 12, 13, 14} x {""} 			x {"Arbeit", "Leistung"}	| => UNGÜLTIGER
-	 * 02:	{.., -2, -1, 0, 1, 2, ...} 	x {..., 12, 13, 14} x {null} 		x {"Arbeit", "Leistung"}	| => UNGÜLTIGER
-	 * 03:	{.., -2, -1, 0, 1, 2, ...} 	x {..., 12, 13, 14} x {"AaBbCc..."} x {"Arbeit", "Leistung"}	| => UNGÜLTIGER
-	 * 04:	{.., -2, -1, 0, 1, 2, ...} 	x {15, 16, 17, ...} x {""} 			x {"Arbeit", "Leistung"}	| => UNGÜLTIGER
-	 * 06:	{.., -2, -1, 0, 1, 2, ...} 	x {15, 16, 17, ...} x {"AaBbCc..."} x {"Arbeit", "Leistung"}	| => GÜLTIGER
-	 * 12:	{.., -2, -1, 0, 1, 2, ...} 	x {15, 16, 17, ...} x {"AaBbCc..."} x {"AaBbCc..."}				| => UNGÜLTIGER
+	 * 
+	 * 03:	{.., -2, -1, 0, 1, 2, ..} 	x {..., 12, 13, 14} x {"AaBbCc..."} x {"Arbeit", "Leistung"}	| => UNGÜLTIGER
+	 * 04:	{.., -2, -1, 0, 1, 2, ..} 	x {15, 16, 17, ..} 	x {""} 			x {"Arbeit", "Leistung"}	| => UNGÜLTIGER
+	 * 05:	{.., -2, -1, 0, 1, 2, ..} 	x {15, 16, 17, ..} 	x {null} 		x {"Arbeit", "Leistung"}	| => UNGÜLTIGER
+	 * 06:	{.., -2, -1, 0, 1, 2, ..} 	x {15, 16, 17, ..} 	x {"AaBbCc..."} x {"Arbeit", "Leistung"}	| => GÜLTIGER
+	 * 12:	{.., -2, -1, 0, 1, 2, ..} 	x {15, 16, 17, ..} 	x {"AaBbCc..."} x {"AaBbCc..."}				| => UNGÜLTIGER
 	 * --------------------------------------------------------------------------------------------
 	 * 
 	 */
@@ -121,18 +124,16 @@ class MessreihenJUnitTest {
 	// 4.2.2
 	private static Stream<Arguments> aequivalenzklassenTestParameter() {
 		return Arrays.stream(new Arguments[] {
-				//01 => UNGÜLTIGER
-				Arguments.of(0, 14, "", "Arbeit", "Das Zeitintervall darf nicht kleiner als 15 sein!"),
-				//02 => UNGÜLTIGER
-				Arguments.of(0, 14, null, "Leistung", "Das Zeitintervall darf nicht kleiner als 15 sein!"),
 				//03 => UNGÜLTIGER
-				Arguments.of(0, 14, "LED", "Arbeit", "Das Zeitintervall darf nicht kleiner als 15 sein!"),
+				Arguments.of(0, 14, 	"Laptop", 	"Arbeit", 		"Das Zeitintervall darf nicht kleiner als 15 sein!"),
 				//04 => UNGÜLTIGER
-				Arguments.of(0, 15, "", "Leistung", "Der Verbraucher darf nicht leer sein!"),
+				Arguments.of(0, 15, 	"", 		"Arbeit", 		"Der Verbraucher darf nicht leer sein!"),
+				//05 => UNGÜLTIGER
+				Arguments.of(0, 15, 	null, 		"Arbeit", 		"Der Verbraucher darf nicht leer sein!"),
 				//06 => GÜLTIGER
-				Arguments.of(0, 15, "Lampe", "Arbeit", null),
+				Arguments.of(0, 15, 	"Laptop", 	"Arbeit", 		null),
 				//12 => UNGÜLTIGER
-				Arguments.of(0, 15, "Laptop", "Irgendwas", "Die Messgröße ist nicht zulässig!")});	
+				Arguments.of(0, 15, 	"Laptop", 	"Irgendwas", 	"Die Messgröße ist nicht zulässig!")});	
 	}
 	
 	// 6.2.1)
